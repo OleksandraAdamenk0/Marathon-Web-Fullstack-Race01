@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <% if (format === 'register') { %>
+            <title>Registration | Shelter</title>
+        <% } else if (format === 'login') { %>
+            <title>Login | Shelter</title>
+        <% } else if (format === 'confirm') { %>
+            <title>Confirmation | Shelter</title>
+        <% } else { %>
+            <title>Shelter</title>
+        <% } %>
+
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Poppins&amp;display=swap'>
+
+    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="/css/theme-switch.css">
+</head>
+<body>
+    <!--background-->
+    <video autoplay muted loop playsinline class="bg-video dark">
+        <source src="/images/background-dark.mp4" type="video/mp4">
+    </video>
+    <video id="dark-video" autoplay muted loop playsinline class="bg-video light">
+        <source src="/images/background-light.mp4" type="video/mp4">
+    </video>
+
+    <div class="fog-container">
+        <div class="fog"></div>
+    </div>
+
+    <%- include('./partials/theme-switch') %>
+
+    <div class="wrapper">
+        <% if (format === 'registration') { %>
+            <%- include('./partials/registration-form')%>
+        <% } else if (format === 'login') { %>
+            <%- include('./partials/login-form')%>
+        <% } else if (format == 'confirm') { %>
+            <%- include('./partials/confirm')%>
+        <% } else { %>
+            <p>Unknown format: "<%=format%>" was called</p>
+        <% } %>
+    </div>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>

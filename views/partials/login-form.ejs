@@ -1,0 +1,33 @@
+<form class="content" id="login" action="/api/auth/login" method="POST">
+    <div class="title">
+        <span>Enter the Bunker</span>
+    </div>
+
+    <fieldset class="input_box">
+        <input type="text" id="email" name="email" class="input">
+        <label for="email" class="label">Your email, back from the good days...</label>
+        <label for="email" class="error">No contact point. No way back.</label>
+        <i class='bx bx-envelope icon'></i>
+    </fieldset>
+
+    <fieldset class="input_box">
+        <input type="password" id="pass" name="password" class="input">
+        <label for="pass" class="label">Secret code to the bunker</label>
+        <label for="pass" class="error">Your access code is missing.</label>
+        <i class="bx bx-lock-alt icon"></i>
+    </fieldset>
+
+    <div class="forgot">
+        <div class="forgot">
+            <p>Can’t get in? Hope it’s not too late…  <br> to <a href="#">restore the password</a></p>
+        </div>
+    </div>
+
+    <fieldset class="input_box">
+        <input type="submit" class="input-submit" value="Login">
+    </fieldset>
+
+    <div class="register">
+        <span>New here? <a href="/registration">Register</a> before it’s too late</span>
+    </div>
+</form>

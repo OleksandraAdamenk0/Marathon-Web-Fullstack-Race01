@@ -1,0 +1,48 @@
+<form class="content" id="registration" action="/api/auth/registration" method="POST">
+    <div class="title">
+        <span>Claim Your Spot</span>
+    </div>
+
+    <fieldset class="input_box">
+        <input type="text" id="username" name="username" class="input">
+        <label for="username" class="label">The name you'll be known by</label>
+        <label for="username" class="error">You must have a name to be remembered!</label>
+        <i class="bx bx-user icon"></i>
+    </fieldset>
+
+    <fieldset class="input_box">
+        <input type="text" id="email" name="email" class="input">
+        <label for="email" class="label">Your email, back from the good days...</label>
+        <label for="email" class="error">This doesn’t look like a real email</label>
+        <i class='bx bx-envelope icon'></i>
+    </fieldset>
+
+    <fieldset class="input_box">
+        <input type="password" id="pass" name="password" class="input">
+        <label for="pass" class="label">Secret code to the bunker</label>
+        <ul id="password-requirements">
+            <li class="requirement">At least one lowercase letter</li>
+            <li class="requirement">At least one uppercase letter</li>
+            <li class="requirement">At least one number</li>
+            <li class="requirement">At least one special character (!@#$%^&*._-)</li>
+            <li class="requirement">Between 6 and 256 characters</li>
+            <li class="requirement">No spaces allowed</li>
+        </ul>
+        <i class="bx bx-lock-alt icon"></i>
+    </fieldset>
+
+    <fieldset class="input_box">
+        <input type="password" id="repeat-pass" name="repeatPassword" class="input">
+        <label for="repeat-pass" class="label">One more time. Make sure it’s right</label>
+        <label for="repeat-pass" class="error">Mismatch detected. Re-enter carefully</label>
+        <i class="bx bx-lock-alt icon"></i>
+    </fieldset>
+
+    <fieldset class="input_box">
+        <input type="submit" class="input-submit" value="Register">
+    </fieldset>
+
+    <div class="register">
+        <span>You’ve been here before? <a href="/login">Get inside.</a></span>
+    </div>
+</form>
