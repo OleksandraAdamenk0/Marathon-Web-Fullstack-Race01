@@ -4,21 +4,21 @@
     </div>
 
     <fieldset class="input_box">
-        <input type="text" id="username" name="username" class="input">
+        <input type="text" id="username" name="username" maxlength="50" class="input">
         <label for="username" class="label">The name you'll be known by</label>
         <label for="username" class="error">You must have a name to be remembered!</label>
         <i class="bx bx-user icon"></i>
     </fieldset>
 
     <fieldset class="input_box">
-        <input type="text" id="email" name="email" class="input">
+        <input type="text" id="email" name="email" maxlength="100" class="input">
         <label for="email" class="label">Your email, back from the good days...</label>
         <label for="email" class="error">This doesn’t look like a real email</label>
         <i class='bx bx-envelope icon'></i>
     </fieldset>
 
     <fieldset class="input_box">
-        <input type="password" id="pass" name="password" class="input">
+        <input type="password" id="pass" name="password" maxlength="255" class="input">
         <label for="pass" class="label">Secret code to the bunker</label>
         <ul id="password-requirements">
             <li class="requirement">At least one lowercase letter</li>
@@ -32,7 +32,7 @@
     </fieldset>
 
     <fieldset class="input_box">
-        <input type="password" id="repeat-pass" name="repeatPassword" class="input">
+        <input type="password" id="repeat-pass" name="repeatPassword" maxlength="255" class="input">
         <label for="repeat-pass" class="label">One more time. Make sure it’s right</label>
         <label for="repeat-pass" class="error">Mismatch detected. Re-enter carefully</label>
         <i class="bx bx-lock-alt icon"></i>

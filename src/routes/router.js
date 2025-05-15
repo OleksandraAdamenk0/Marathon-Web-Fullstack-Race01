@@ -1,5 +1,5 @@
 const express = require('express');
-const regularRouter = require("./regularRouter");
+const regularRouter = require("./openRouter");
 const apiRouter = require("./apiRouter");
 
 const router = express.Router();

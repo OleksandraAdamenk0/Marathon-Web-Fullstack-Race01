@@ -8,24 +8,16 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET_KEY || 'your_refresh_s
 
 function authenticateAccessToken(req, res, next) {
     const token = req.cookies.access_token;
-    if (!token) {
-        console.log('No access token provided');
-        return res.redirect('/login');
-    }
+    if (!token) return res.redirect('/login');
 
     jwt.verify(token, JWT_ACCESS_SECRET, (err, decoded) => {
+        // if the access token has expired
         if (err) {
             const refreshToken = req.cookies.refresh_token;
-            if (!refreshToken) {
-                console.log('No refresh token provided');
-                return res.redirect('/login');
-            }
+            if (!refreshToken) return res.redirect('/login');
 
             jwt.verify(refreshToken, JWT_REFRESH_SECRET, (err, decoded) => {
-                if (err) {
-                    console.log('wrong refresh token provided');
-                    return res.redirect('/login');
-                }
+                if (err) return res.redirect('/login');
 
                 const user = { id: decoded.id, email: decoded.email };
 
@@ -40,10 +32,8 @@ function authenticateAccessToken(req, res, next) {
                 return next();
             });
         }
-
-        console.log(decoded);
+        // an access token was verified
         req.user = {id: decoded.id, email: decoded.email};
-        console.log("decoded: ", decoded);
         next();
     });
 }

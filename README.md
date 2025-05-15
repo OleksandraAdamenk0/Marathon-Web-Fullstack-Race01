@@ -1,4 +1,4 @@
-# Shelter
+# Card Game
 
 Copyright (C) 2025 Oleksandra and other team members
 
@@ -11,6 +11,5 @@ To obtain permission, please contact me at: adamsaleksa@gmail.com
 * /home
 * /index
 * /rules
-* /about
 * /login
 * /registration
