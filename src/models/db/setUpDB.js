@@ -21,7 +21,8 @@ const createUsersTableSQL = `
         password_hash VARCHAR(255) NOT NULL,
         avatar_url VARCHAR(255) DEFAULT '/avatar.png',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        status ENUM('user', 'admin') DEFAULT 'user'
+        status ENUM('user', 'admin') DEFAULT 'user',
+        emailStatus TINYINT(1) DEFAULT 0
     );
 `;
 
@@ -74,19 +75,6 @@ const createBattleLogsTableSQL = `
     )
 `
 
-const createTableSQL = `
-    CREATE TABLE IF NOT EXISTS users (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        isEmailVerified BOOLEAN DEFAULT FALSE,
-        emailVerificationToken VARCHAR(255),
-        username VARCHAR(255) NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        avatar VARCHAR(255) DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-`;
-
 function setUpDB() {
     executeQuery(connection, `CREATE DATABASE IF NOT EXISTS ${dbName};`)
         .then(() => executeQuery(connection, `DROP USER IF EXISTS ${dbUser}@'localhost';`))
@@ -104,7 +92,6 @@ function setUpDB() {
         .then(() => executeQuery(connection, createRoomsTableSQL))
         .then(() => executeQuery(connection, createUsersCardsTableSQL))
         .then(() => executeQuery(connection, createBattleLogsTableSQL))
-        .then(() => executeQuery(connection, createTableSQL))
         .then(() => console.log('Successfully set up DB'))
         .catch((err) => console.error("Error during MySQL setup: ", err))
         .finally(() => connection.end());

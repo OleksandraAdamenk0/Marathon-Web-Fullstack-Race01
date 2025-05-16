@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const {generateAccessToken} = require("../utils/redis");
+const generateAccessToken = require("../utils/generateAccessToken");
+const {generateRefreshToken} = require("../utils/redis");
 
 require("dotenv").config();
 
@@ -27,6 +28,12 @@ function authenticateAccessToken(req, res, next) {
                     secure: process.env.NODE_ENV === 'production',
                     maxAge: 3600000
                 });
+                const newRefreshToken = generateRefreshToken(user);
+                res.cookie('refresh_token', newRefreshToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    maxAge: 604800000,
+                })
 
                 req.user = user;
                 return next();

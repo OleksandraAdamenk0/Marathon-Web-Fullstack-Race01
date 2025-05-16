@@ -1,66 +1,25 @@
-const nodemailer = require('nodemailer');
-const {generateEmailVerificationToken} = require('../utils/redis');
-const {getUserByEmail, createUser} = require("../models/user");
+const UserModel = require('../models/User');
+const sendVerificationEmail = require('../utils/sendVerificationEmail.js');
+const getMailboxUrl = require('../utils/getMailBoxUrl.js');
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.GMAIL_USERNAME,
-        pass: process.env.GMAIL_PASSWORD,
-    }
-})
+const User = new UserModel();
 
-async function sendVerificationEmail(user) {
-    const token = generateEmailVerificationToken(user);
-    console.log("sending token: ", token);
-    const verificationLink = `http://localhost:${process.env.PORT || 5000}/api/auth/verify-email?token=${token}`;
-
-    const mailOptions = {
-        from: process.env.GMAIL_USERNAME,
-        to: user.email,
-        subject: 'Email Confirmation',
-        text: `Please confirm your email by clicking on the following link: ${verificationLink}`,
-    }
+module.exports = async function userRegistrationController(req, res) {
+    const { username, email, password } = req.body;
 
     try {
-        await transporter.sendMail(mailOptions);
-    } catch (error) {
-        console.log("Error sending email: ", error);
-    }
-}
+        if (await User.getUserByUsername(username))
+            return res.status(400).json({field: username, message: 'Username already in use'});
+        if (await User.getUserByEmail(email))
+            return res.status(400).json({field: email, message: 'Email already in use'});
 
-function getMailboxUrl(email) {
-    let domain = email.split('@')[1].toLowerCase();
-    const urls = {
-        "gmail.com": "https://mail.google.com/mail/u/0/#inbox",
-        "yahoo.com": "https://mail.yahoo.com",
-        "outlook.com": "https://outlook.live.com/mail/inbox",
-        "hotmail.com": "https://outlook.live.com/mail/inbox",
-        "icloud.com": "https://www.icloud.com/mail",
-        "zoho.com": "https://mail.zoho.com"
-    };
-    return urls[domain] || "#";
-}
-
-async function userRegistrationController(req, res) {
-    const { email, username, password, repeatPassword } = req.body;
-    console.log(req.body);
-
-    try {
-        const existingUser = await getUserByEmail(email);
-        if (existingUser) {
-            return res.status(400).json({message: 'Email already in use'});
-        }
-
-        const newUser = await createUser(email, username, password);
-
+        const newUser = await User.createUser(email, username, password);
+        if (!newUser) return res.status(500).json({error: 'Error creating user'});
         await sendVerificationEmail(newUser);
 
-        res.render('auth', {format: "confirm", email: email, mailBox: getMailboxUrl(email)});
+        res.redirect(`/verify-email/${email}`);
     } catch (error) {
         console.log("Error during registration: ", error);
         res.status(500).json({error: error});
     }
 }
-
-module.exports = userRegistrationController;
