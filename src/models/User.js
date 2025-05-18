@@ -1,37 +1,9 @@
 const bcrypt = require('bcryptjs');
-const executeQuery = require("./db/executeQuery");
-const connection = require("./db/db");
 const Model = require("./Model");
-const {query} = require("express");
 
 async function hashPassword(password) {
     const salt = await bcrypt.genSalt(10);
     return bcrypt.hash(password, salt);
-}
-
-async function comparePassword(password, hashedPassword) {
-    return bcrypt.compare(password, hashedPassword);
-}
-
-const createUser = async (email, username, password) => {
-    const hashedPassword = await hashPassword(password);
-    const query = `INSERT INTO users (email, username, password) VALUES (?, ?, ?)`;
-
-    try {
-        const result = await executeQuery(connection, query, [email, username, hashedPassword]);
-        const userId = result.insertId;
-        const user = await getUserById(userId);
-        console.log('User created successfully: ', result);
-        return user;
-    } catch (error) {
-        console.log("Error creating user: ", error);
-        return null;
-    }
-}
-
-async function verifyUserEmail(userId) {
-    const query = `UPDATE users SET isEmailVerified = TRUE WHERE id = ?`;
-    await executeQuery(connection, query, [userId]);
 }
 
 class User extends Model {
@@ -73,14 +45,21 @@ class User extends Model {
 
     async isEmailVerified(id) {
         const user = await this.getById(id);
+        console.log(id, user);
         if (!user) return false;
-        return Boolean(user.emailStatus);
+        console.log(user.emailStatus);
+        return user.emailStatus === 1;
     }
 
     async verifyUserEmail(id) {
         const result = this.query(`UPDATE users SET emailStatus = 1 WHERE id = ?`, [id]);
         return result.affectedRows !== 0;
+    }
 
+    async setPassword(id, password) {
+        const hashedPassword = await hashPassword(password);
+        const result = this.query(`UPDATE users SET password_hash = ? WHERE id = ?`, [hashedPassword, id]);
+        return result.affectedRows !== 0;
     }
 
 }

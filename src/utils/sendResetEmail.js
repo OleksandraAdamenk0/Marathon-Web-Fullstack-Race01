@@ -3,7 +3,7 @@ const transport = require("./createNodemailerTransport.js");
 
 module.exports = async function sendVerificationEmail(user) {
     const token = generateResetPasswordToken(user);
-    const verificationLink = `http://localhost:${process.env.PORT || 5000}/api/auth/reset?token=${token}`;
+    const verificationLink = `http://localhost:${process.env.PORT || 5000}/api/auth/set-new-password?token=${token}`;
 
     const mailOptions = {
         from: process.env.GMAIL_USERNAME,

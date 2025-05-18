@@ -17,6 +17,7 @@ router.get('/profile', authenticateAccessToken, (req, res) => {res.render('profi
 
 router.get('/verify-email/:email', (req, res) => {
     res.render('auth', {format: "confirm", email: req.params.email, mailBox: getMailboxUrl(req.params.email)});
+    // add relocate to the profile if the email was verified
 });
 
 router.get('/reset-password-sent/:email', (req, res) => {

@@ -50,6 +50,8 @@
             <%- include('./partials/new_password')%>
         <% } else if (format == 'reset-sent') { %>
             <%- include('./partials/reset-sent')%>
+        <% } else if (format == 'new-password-form') { %>
+            <%- include('./partials/new-password-form')%>
         <% } else { %>
             <p>Unknown format: "<%=format%>" was called</p>
         <% } %>

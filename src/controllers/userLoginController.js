@@ -1,4 +1,5 @@
 const UserModel = require("../models/User");
+const sendVerificationEmail = require("../utils/sendVerificationEmail.js");
 const generateAccessToken = require("../utils/generateAccessToken");
 const generateRefreshToken = require("../utils/generateRefreshToken");
 
@@ -14,7 +15,11 @@ async function UserLoginController(req, res) {
         const passwordMatch = User.comparePassword(password, user.id);
         if (!passwordMatch) return res.status(400).json({error: 'Invalid password'});
 
-        if (!user.isEmailVerified) return res.redirect(`/verify-email/${email}`);
+        if (!await User.isEmailVerified(user.id)) {
+            console.log("test")
+            await sendVerificationEmail(user);
+            return res.redirect(`/verify-email/${email}`);
+        }
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);

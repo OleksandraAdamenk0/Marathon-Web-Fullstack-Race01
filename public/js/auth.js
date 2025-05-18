@@ -48,6 +48,7 @@ function validatePassword(passwordInput) {
 
 function setEmailError(emailInput) {
     const emailError = document.querySelector('label[for="email"].error');
+    if (!emailError) return;
     // const icon = emailInput.closest('.input_box').querySelector('i');
 
     emailInput.style.borderColor = 'var(--error-color)';
@@ -60,6 +61,7 @@ function setEmailError(emailInput) {
 
 function setUsernameError(usernameInput) {
     const usernameError = document.querySelector('label[for="username"].error');
+    if (!usernameError) return;
     usernameInput.style.borderColor = 'var(--error-color)';
     usernameInput.closest('.input_box').style.margin = "32px 0"
     if (usernameError) usernameError.style.display = 'block';
@@ -126,6 +128,7 @@ function checkPasswordEmptiness(event) {
 }
 
 function submitForm(event) {
+    if (form.id === "new-password") return;
     checkEmail(event);
     if (form.id === "registration") {
         checkUsername(event);
@@ -138,7 +141,7 @@ function submitForm(event) {
 }
 
 function updateRequirements(passwordInput, requirements) {
-    const checks =validatePassword(passwordInput);
+    const checks = validatePassword(passwordInput);
 
     requirements.forEach((req, index) => {
         req.classList.remove("pass-valid", "pass-invalid");

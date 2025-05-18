@@ -1,6 +1,5 @@
 const UserModel = require('../models/User');
 const sendVerificationEmail = require('../utils/sendVerificationEmail.js');
-const getMailboxUrl = require('../utils/getMailBoxUrl.js');
 
 const User = new UserModel();
 
