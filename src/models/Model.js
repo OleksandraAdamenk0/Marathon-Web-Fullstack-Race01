@@ -6,17 +6,17 @@ class Model {
     }
 
     async getAll() {
-        const [rows] = await pool.query(`SELECT * FROM \`${this.table}\``);
+        const [rows] = await pool.promise().query(`SELECT * FROM \`${this.table}\``);
         return rows;
     }
 
     async getById(id) {
-        const [rows] = await pool.query(`SELECT * FROM \`${this.table}\` WHERE id = ?`, [id]);
+        const [rows] = await pool.promise().query(`SELECT * FROM \`${this.table}\` WHERE id = ?`, [id]);
         return rows[0];
     }
 
     async deleteById(id) {
-        const [result] = await pool.query(`DELETE FROM \`${this.table}\` WHERE id = ?`, [id]);
+        const [result] = await pool.promise().query(`DELETE FROM \`${this.table}\` WHERE id = ?`, [id]);
         return result.affectedRows;
     }
 

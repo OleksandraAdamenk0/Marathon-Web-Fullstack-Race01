@@ -1,14 +1,14 @@
-const generateEmailVerificationToken = require("./generateEmailVerificationToken.js");
+const generateResetPasswordToken = require("./generateResetPasswordToken.js");
 const transport = require("./createNodemailerTransport.js");
 
 module.exports = async function sendVerificationEmail(user) {
-    const token = generateEmailVerificationToken(user);
-    const verificationLink = `http://localhost:${process.env.PORT || 5000}/api/auth/verify-email?token=${token}`;
+    const token = generateResetPasswordToken(user);
+    const verificationLink = `http://localhost:${process.env.PORT || 5000}/api/auth/reset?token=${token}`;
 
     const mailOptions = {
         from: process.env.GMAIL_USERNAME,
         to: user.email,
-        subject: 'Email Confirmation',
+        subject: 'Password recovery',
         html: `
     <div style="
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -20,10 +20,10 @@ module.exports = async function sendVerificationEmail(user) {
         margin: auto;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     ">
-        <h1 style="color: #111827;">Welcome to Our Cardgame!</h1>
-        <p style="font-size: 18px; color: #374151;">Hi <b>${user.name || 'there'}</b>,</p>
+        <h1 style="color: #111827;">Lost Your Keycard, Survivor?</h1>
+        <p style="font-size: 18px; color: #374151;">Hey <b>${user.name || 'stranger'}</b>,</p>
         <p style="font-size: 16px; color: #4b5563;">
-            Please confirm your email address by clicking the button below:
+            You requested to reset your password. Click the button below to restore access to your bunker terminal.
         </p>
         <a href="${verificationLink}" 
            style="
@@ -38,10 +38,10 @@ module.exports = async function sendVerificationEmail(user) {
               font-size: 16px;
               box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
            ">
-            Confirm Email
+            Reset Password
         </a>
         <p style="margin-top: 30px; font-size: 14px; color: #9ca3af;">
-            If you didn't request this, you can ignore this email.
+            If you didn't request this, someone may have guessed your name in the wasteland. You can safely ignore this email.
         </p>
     </div>
   `,
@@ -52,7 +52,7 @@ module.exports = async function sendVerificationEmail(user) {
         return true;
     }
     catch (error) {
-        console.log("Error sending email: ", error);
+        console.log("Error sending restore password email: ", error);
         return false;
     }
 }

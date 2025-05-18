@@ -42,6 +42,14 @@
             <%- include('./partials/login-form')%>
         <% } else if (format == 'confirm') { %>
             <%- include('./partials/confirm')%>
+        <% } else if (format == 'forgot') { %>
+            <%- include('./partials/forgot')%>
+        <% } else if (format == 'reset') { %>
+            <%- include('./partials/reset')%>
+        <% } else if (format == 'new_password') { %>
+            <%- include('./partials/new_password')%>
+        <% } else if (format == 'reset-sent') { %>
+            <%- include('./partials/reset-sent')%>
         <% } else { %>
             <p>Unknown format: "<%=format%>" was called</p>
         <% } %>

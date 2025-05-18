@@ -19,4 +19,10 @@ router.get('/verify-email/:email', (req, res) => {
     res.render('auth', {format: "confirm", email: req.params.email, mailBox: getMailboxUrl(req.params.email)});
 });
 
+router.get('/reset-password-sent/:email', (req, res) => {
+    res.render('auth', {format: 'reset-sent', email: req.params.email, mailBox: getMailboxUrl(req.params.email)});
+});
+
+router.get('/forgot', (req, res) => {res.render('auth', {format: 'forgot'});});
+
 module.exports = router;
