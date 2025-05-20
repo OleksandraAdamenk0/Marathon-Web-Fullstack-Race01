@@ -75,7 +75,8 @@ const createCardsTableSQL = `
         defense INT NOT NULL,
         cost INT NOT NULL,
         team_type ENUM('survivors', 'infected'),
-        card_type ENUM('creature', 'spell', 'leader', 'energy_farmer')
+        card_type ENUM('creature', 'spell', 'leader', 'energy_farmer'),
+        description VARCHAR(255) DEFAULT NULL
     )
 `;
 
