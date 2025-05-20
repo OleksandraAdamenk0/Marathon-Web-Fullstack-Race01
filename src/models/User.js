@@ -30,7 +30,7 @@ class User extends Model {
         try {
             const result = await this.query(query, [email, username, hashedPassword]);
             if (!result) return null
-            return await this.getUserByEmail(email);
+            return await this.getById(result.insertId);
         } catch (error) {
             console.log("Error creating user: ", error);
             return null;

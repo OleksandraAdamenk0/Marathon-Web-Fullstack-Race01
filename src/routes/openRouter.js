@@ -1,5 +1,6 @@
 const express = require('express');
 const authenticateAccessToken = require("../middleware/authenticateAccessToken");
+const getUserProfileController = require("../controllers/getUserProfileController");
 const getMailboxUrl = require("../utils/getMailBoxUrl");
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.get('/rules', (req, res) => {res.render('rules');});
 router.get('/registration', (req, res) => {res.render('auth', {format: 'registration'});});
 router.get('/login', (req, res) => {res.render('auth', {format: 'login'});});
 
-router.get('/profile', authenticateAccessToken, (req, res) => {res.render('profile');});
+router.get('/profile/:id', authenticateAccessToken, getUserProfileController);
 
 router.get('/verify-email/:email', (req, res) => {
     res.render('auth', {format: "confirm", email: req.params.email, mailBox: getMailboxUrl(req.params.email)});

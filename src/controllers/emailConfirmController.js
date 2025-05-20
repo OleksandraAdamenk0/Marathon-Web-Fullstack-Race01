@@ -32,7 +32,7 @@ async function verifyEmail(req, res) {
             maxAge: 604800000,
         })
 
-        res.redirect('/profile');
+        res.redirect(`/profile/${user.id}`);
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
             const decoded = jwt.decode(token);

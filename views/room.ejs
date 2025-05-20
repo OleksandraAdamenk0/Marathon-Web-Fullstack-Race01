@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Waiting room</title>
+    <link rel="stylesheet" href="/css/room.css">
+</head>
+<body>
+    <% if (format === "code-form") { %>
+    <%- include("./partials/code-form") %>
+    <% } else if (format === "private-room"){ %>
+    <link rel="stylesheet" href="/css/fire.css">
+    <%- include("./partials/waiting-room") %>
+    <% } else { %>
+    <%- include("./partials/waiting-room") %>
+    <link rel="stylesheet" href="/css/fire.css">
+    <link rel="stylesheet" href="/css/waiting-phrase.css">
+    <%- include("./partials/waiting-phrase") %>
+    <% }%>
+
+</body>
+</html>

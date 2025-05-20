@@ -38,6 +38,7 @@ function authenticateAccessToken(req, res, next) {
                 req.user = user;
                 return next();
             });
+            return;
         }
         // an access token was verified
         req.user = {id: decoded.id, email: decoded.email};

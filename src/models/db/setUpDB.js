@@ -1,6 +1,8 @@
 require('dotenv').config();
 const mysql = require('mysql2');
+const cardsData = require('./cardsData');
 const executeQuery = require("./executeQuery");
+
 
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -30,14 +32,15 @@ const createRoomsTableSQL = `
     CREATE TABLE IF NOT EXISTS rooms (
         id INT PRIMARY KEY AUTO_INCREMENT,
         player_one_id INT NOT NULL,
-        player_two_id INT NOT NULL,
+        player_two_id INT,
         winner_id INT,
+        code VARCHAR(10) UNIQUE DEFAULT NULL,
         status ENUM('waiting', 'in-progress', 'finished') DEFAULT 'waiting',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (player_one_id) REFERENCES users(id),
         FOREIGN KEY (player_two_id) REFERENCES users(id)
     )
-`
+`;
 
 const createUsersCardsTableSQL = `
     CREATE TABLE IF NOT EXISTS users_cards (
@@ -49,17 +52,61 @@ const createUsersCardsTableSQL = `
         FOREIGN KEY (card_id) REFERENCES cards(id),
         FOREIGN KEY (room_id) REFERENCES rooms(id)
     )
+`;
+
+const createPlayersTableSQL = `
+    CREATE TABLE IF NOT EXISTS players (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT NOT NULL,
+        room_id INT NOT NULL,
+        health INT NOT NULL DEFAULT 10,
+        energy INT NOT NULL DEFAULT 10,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (room_id) REFERENCES rooms(id)
+    )
 `
 
 const createCardsTableSQL = `
     CREATE TABLE IF NOT EXISTS cards (
         id INT PRIMARY KEY AUTO_INCREMENT,
-        name VARCHAR(50) NOT NULL,
-        image_url VARCHAR(255) UNIQUE DEFAULT '/default-card.png',
+        name VARCHAR(50) NOT NULL UNIQUE,
+        image_url VARCHAR(255) UNIQUE,
         attack INT NOT NULL,
         defense INT NOT NULL,
-        heal INT NOT NULL,
-        cost INT NOT NULL
+        cost INT NOT NULL,
+        team_type ENUM('survivors', 'infected'),
+        card_type ENUM('creature', 'spell', 'leader', 'energy_farmer')
+    )
+`;
+
+const createCreaturesCardsTableSQL = `
+    CREATE TABLE IF NOT EXISTS creatures_cards (
+        id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
+        special_ability VARCHAR(50) DEFAULT NULL
+    )
+`;
+
+const createSpellsCardsTableSQL = `
+    CREATE TABLE IF NOT EXISTS spells_cards (
+        id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
+        effect VARCHAR(50) DEFAULT NULL
+    )
+`;
+
+const createLeadersCardsTableSQL = `
+    CREATE TABLE IF NOT EXISTS leaders_cards (
+    id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
+    bonus_type ENUM('attack', 'defence', 'default') DEFAULT 'default',
+    bonus_value INT DEFAULT 0
+)
+`;
+
+const createEnergyFarmerCardsTableSQL = `
+    CREATE TABLE IF NOT EXISTS energy_farmer_cards (
+        id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
+        energy INT DEFAULT 0,
+        penalty INT DEFAULT 0,
+        max_instances INT DEFAULT 4
     )
 `
 
@@ -73,7 +120,7 @@ const createBattleLogsTableSQL = `
         FOREIGN KEY (room_id) REFERENCES rooms(id),
         FOREIGN KEY (user_id) REFERENCES users(id)
     )
-`
+`;
 
 function setUpDB() {
     executeQuery(connection, `CREATE DATABASE IF NOT EXISTS ${dbName};`)
@@ -89,9 +136,15 @@ function setUpDB() {
         }))
         .then(() => executeQuery(connection, createUsersTableSQL))
         .then(() => executeQuery(connection, createCardsTableSQL))
+        .then(() => executeQuery(connection, createCreaturesCardsTableSQL))
+        .then(() => executeQuery(connection, createSpellsCardsTableSQL))
+        .then(() => executeQuery(connection, createLeadersCardsTableSQL))
+        .then(() => executeQuery(connection, createEnergyFarmerCardsTableSQL))
         .then(() => executeQuery(connection, createRoomsTableSQL))
+        .then(() => executeQuery(connection, createPlayersTableSQL))
         .then(() => executeQuery(connection, createUsersCardsTableSQL))
         .then(() => executeQuery(connection, createBattleLogsTableSQL))
+        .then(() => executeQuery(connection, cardsData))
         .then(() => console.log('Successfully set up DB'))
         .catch((err) => console.error("Error during MySQL setup: ", err))
         .finally(() => connection.end());

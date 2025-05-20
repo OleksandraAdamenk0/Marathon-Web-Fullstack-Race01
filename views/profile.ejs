@@ -5,6 +5,26 @@
     <title>Profile</title>
 </head>
 <body>
-Profile
+<h1>Profile</h1>
+
+<p>Welcome, <%= user.username %>!</p>
+
+<form action="/api/game/public/<%= user.id %>" method="post">
+    <input type="submit" value="Start public game">
+</form>
+
+<form action="/api/game/private/<%= user.id %>" method="post">
+    <input type="submit" value="Create private game">
+</form>
+
+<form action="/api/game/private/<%= user.id %>" method="get">
+    <input type="submit" value="Join to the private game">
+</form>
+
+<form action="/api/profile/<%= user.id %>/logout" method="post">
+    <input type="submit" value="Logout">
+</form>
+
+<script src="/js/loadGame.js"></script>
 </body>
 </html>
