@@ -1,6 +1,6 @@
 require('dotenv').config();
 const mysql = require('mysql2');
-const cardsData = require('./cardsData');
+const {cardsData, leaderData, spellData, energyData} = require('./cardsData');
 const executeQuery = require("./executeQuery");
 
 
@@ -90,7 +90,7 @@ const createCreaturesCardsTableSQL = `
 const createSpellsCardsTableSQL = `
     CREATE TABLE IF NOT EXISTS spells_cards (
         id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
-        effect VARCHAR(50) DEFAULT NULL
+        effect VARCHAR(255) DEFAULT NULL
     )
 `;
 
@@ -103,7 +103,7 @@ const createLeadersCardsTableSQL = `
 `;
 
 const createEnergyFarmerCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS energy_farmer_cards (
+    CREATE TABLE IF NOT EXISTS energy_farmers_cards (
         id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
         energy INT DEFAULT 0,
         penalty INT DEFAULT 0,
@@ -121,6 +121,34 @@ const createBattleLogsTableSQL = `
         FOREIGN KEY (room_id) REFERENCES rooms(id),
         FOREIGN KEY (user_id) REFERENCES users(id)
     )
+`;
+
+const dropCardInsertionTriggerSQL = `
+DROP TRIGGER IF EXISTS after_insert_card;
+`
+
+const createCardInsertionTriggerSQL = `
+CREATE TRIGGER after_insert_card
+AFTER INSERT ON cards
+FOR EACH ROW
+BEGIN
+    IF NEW.card_type = 'energy_farmer' THEN
+        INSERT INTO energy_farmers_cards (id)
+        VALUES (NEW.id);
+    END IF;
+    IF NEW.card_type = 'creature' THEN
+        INSERT INTO creatures_cards (id)
+        VALUES (NEW.id);
+    END IF;
+    IF NEW.card_type = 'spell' THEN
+        INSERT INTO spells_cards (id)
+        VALUES (NEW.id);
+    END IF;
+    IF NEW.card_type = 'leader' THEN
+        INSERT INTO leaders_cards (id)
+        VALUES (NEW.id);
+    END IF;
+END;
 `;
 
 function setUpDB() {
@@ -145,7 +173,12 @@ function setUpDB() {
         .then(() => executeQuery(connection, createPlayersTableSQL))
         .then(() => executeQuery(connection, createUsersCardsTableSQL))
         .then(() => executeQuery(connection, createBattleLogsTableSQL))
+        .then(() => connection.promise().query(dropCardInsertionTriggerSQL))
+        .then(() => connection.promise().query(createCardInsertionTriggerSQL))
         .then(() => executeQuery(connection, cardsData))
+        .then(() => executeQuery(connection, leaderData))
+        .then(() => executeQuery(connection, spellData))
+        .then(() => executeQuery(connection, energyData))
         .then(() => console.log('Successfully set up DB'))
         .catch((err) => console.error("Error during MySQL setup: ", err))
         .finally(() => connection.end());
