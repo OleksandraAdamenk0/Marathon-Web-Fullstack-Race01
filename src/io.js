@@ -6,8 +6,15 @@ const app = require('./app');
 const HTTPserver = http.createServer(app)
 const io = new socket.Server(HTTPserver);
 
+const registerSocketHandlers = require('./socket-handlers/socketIndex');
+
 io.on('connection', (socket) => {
-    console.log('a user connected', socket.id);
+    console.log('🟢 WS Connected:', socket.id);
+    registerSocketHandlers(io, socket);
+
+    socket.on('disconnect', () => {
+        console.log('🔴 WS Disconnected:', socket.id);
+    });
 });
 
 module.exports = HTTPserver

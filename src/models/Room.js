@@ -10,7 +10,7 @@ class Room extends Model {
         return  await this.getById(result.insertId);
     }
 
-    async createPrivatRoom(userId) {
+    async createPrivateRoom(userId) {
         const result = await this.query("INSERT INTO rooms (player_one_id) VALUES (?);", [userId]);
         const room = await this.getById(result.insertId);
         if (!room) return null;
@@ -56,3 +56,4 @@ class Room extends Model {
     }
 
 }
+

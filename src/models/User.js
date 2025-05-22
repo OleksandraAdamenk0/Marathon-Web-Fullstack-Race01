@@ -62,6 +62,10 @@ class User extends Model {
         return result.affectedRows !== 0;
     }
 
+    async setAvatar(id, avatarUrl) {
+        const result = this.query(`UPDATE users SET avatar_url = ? WHERE id = ?`, [avatarUrl, id]);
+        return result.affectedRows !== 0;
+    }
 }
 
 module.exports = User;

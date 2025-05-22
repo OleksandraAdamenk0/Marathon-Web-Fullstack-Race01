@@ -42,23 +42,12 @@ const createRoomsTableSQL = `
     )
 `;
 
-const createUsersCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS users_cards (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        user_id INT NOT NULL,
-        card_id INT NOT NULL,
-        room_id INT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (card_id) REFERENCES cards(id),
-        FOREIGN KEY (room_id) REFERENCES rooms(id)
-    )
-`;
-
 const createPlayersTableSQL = `
     CREATE TABLE IF NOT EXISTS players (
         id INT PRIMARY KEY AUTO_INCREMENT,
         user_id INT NOT NULL,
         room_id INT NOT NULL,
+        role ENUM('survivor', 'infected') NOT NULL,
         health INT NOT NULL DEFAULT 10,
         energy INT NOT NULL DEFAULT 10,
         FOREIGN KEY (user_id) REFERENCES users(id),
@@ -123,6 +112,21 @@ const createBattleLogsTableSQL = `
     )
 `;
 
+const createPlayersCardsTableSQL = `
+    CREATE TABLE IF NOT EXISTS players_cards (
+        player_id INT NOT NULL,
+        card_id INT NOT NULL,
+        room_id INT NOT NULL,
+        zone ENUM('deck', 'hand', 'board', 'farm', 'leader', 'discard') NOT NULL,
+        position INT DEFAULT NULL,
+        is_active BOOLEAN DEFAULT FALSE,
+        PRIMARY KEY (player_id, room_id, card_id),
+        FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
+        FOREIGN KEY (card_id) REFERENCES cards(id) ON DELETE CASCADE
+    );
+`;
+
+
 const dropCardInsertionTriggerSQL = `
 DROP TRIGGER IF EXISTS after_insert_card;
 `
@@ -173,6 +177,7 @@ function setUpDB() {
         .then(() => executeQuery(connection, createPlayersTableSQL))
         .then(() => executeQuery(connection, createUsersCardsTableSQL))
         .then(() => executeQuery(connection, createBattleLogsTableSQL))
+        .then(() => executeQuery(connection, createPlayersCardsTableSQL))
         .then(() => connection.promise().query(dropCardInsertionTriggerSQL))
         .then(() => connection.promise().query(createCardInsertionTriggerSQL))
         .then(() => executeQuery(connection, cardsData))
