@@ -35,7 +35,7 @@ async function UserLoginController(req, res) {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        res.redirect(`/profile/${user.id}`);
+        res.redirect(`/menu`);
     } catch (err) {
         console.error("Login error: ", err);
         return res.status(500).json({ error: 'Server error' });

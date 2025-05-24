@@ -13,7 +13,7 @@ async function uploadAvatarController(req, res) {
         if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
         const avatarPath = await imageModel.saveAvatar(req.file, userId);
-        res.status(200).json({ message: 'Avatar uploaded successfully', path: avatarPath });
+        //res.status(200).json({ message: 'Avatar uploaded successfully', path: avatarPath });
     } catch (err) {
         console.error('[Upload Avatar Error]', err);
         res.status(500).json({ error: 'Failed to upload avatar' });
@@ -57,7 +57,7 @@ async function resetAvatarToDefaultController(req, res) {
         if (!user) return res.status(400).json({ error: 'User not found' });
 
         await imageModel.deleteAvatar(userId);
-        await userModel.setAvatar(userId, '/avatar.png');
+        await userModel.setAvatar(userId, 'uploads/avatars/default.png');
 
         res.status(200).json({ message: 'Avatar reset to default' });
     } catch (err) {

@@ -1,4 +1,4 @@
-import Model from "./Model";
+const Model = require('./Model');
 
 class Room extends Model {
     constructor() {
@@ -57,3 +57,4 @@ class Room extends Model {
 
 }
 
+module.exports = Room;

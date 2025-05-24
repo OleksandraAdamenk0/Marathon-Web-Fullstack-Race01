@@ -175,7 +175,7 @@ function setUpDB() {
         .then(() => executeQuery(connection, createEnergyFarmerCardsTableSQL))
         .then(() => executeQuery(connection, createRoomsTableSQL))
         .then(() => executeQuery(connection, createPlayersTableSQL))
-        .then(() => executeQuery(connection, createUsersCardsTableSQL))
+        //.then(() => executeQuery(connection, createUsersCardsTableSQL))
         .then(() => executeQuery(connection, createBattleLogsTableSQL))
         .then(() => executeQuery(connection, createPlayersCardsTableSQL))
         .then(() => connection.promise().query(dropCardInsertionTriggerSQL))
