@@ -11,7 +11,7 @@ body {
     background-color: #0a1212;
     color: #dcdcdc;
     font-family: "Poppins", sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 header {
