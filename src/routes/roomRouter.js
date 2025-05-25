@@ -4,11 +4,10 @@ const router = express.Router();
 const authenticateAccessToken = require('../middleware/authenticateAccessToken');
 
 // Controllers
-const createPublicRoomController = require('../controllers/gameControllers/createPublicRoomController');
-const createPrivateRoomController = require('../controllers/gameControllers/createPrivateRoomController');
-const joinRoomController = require('../controllers/gameControllers/joinRoomController');
-const getAvailablePublicRoomsController = require('../controllers/gameControllers/getAvailablePublicRoomsController');
-
+const createPublicRoomController = require('../controllers/roomControllers/createPublicRoomController');
+const createPrivateRoomController = require('../controllers/roomControllers/createPrivateRoomController');
+const joinRoomController = require('../controllers/roomControllers/joinRoomController');
+const getAvailablePublicRoomsController = require('../controllers/roomControllers/getAvailablePublicRoomsController');
 
 router.post('/public/create', authenticateAccessToken, createPublicRoomController);
 router.post('/private/create', authenticateAccessToken,createPrivateRoomController);

@@ -30,10 +30,16 @@ module.exports = async (req, res) => {
             return res.status(500).json({ error: 'Failed to set second player' });
         }
 
-        res.status(200).json({
-            message: 'Successfully joined the room',
-            roomData: joinedRoom
-        });
+        if (req.query.json === 'true') {
+            return res.status(200).json({
+                success: true,
+                message: 'Joined room successfully',
+                roomId,
+                redirectTo: `/room/${roomId}`
+            });
+        }
+
+        res.redirect(`/room/${roomId}`);
 
     } catch (error) {
         console.error['[JoinRoomController]', error];

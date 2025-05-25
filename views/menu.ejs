@@ -58,7 +58,7 @@
                                   <td><%= room.status %></td>
                                   <td><%= players %> / 2</td>
                                   <td>
-                                      <form action="/api/game/public/join/<%= room.id %>" method="POST">
+                                      <form action="/api/room/join/<%= room.id %>" method="POST">
                                           <button class="join-button" type="submit" <%= isFull ? 'disabled' : '' %>>Join</button>
                                       </form>
                                   </td>
@@ -71,11 +71,11 @@
                   <div class="room-creator">
                       <h3>Create your own room?</h3>
                       <div class = "creator-buttons">
-                          <form action="/api/game/public/create/<%= user.id %>" method="POST">
+                          <form action="/api/room/public/create" method="POST">
                               <button type="submit" name="roomType" value="public">Public</button>
                           </form>
 
-                          <form action="/api/game/private/create/<%= user.id %>" method="POST">
+                          <form action="/api/room/private/create" method="POST">
                               <button type="submit" name="roomType" value="private">Private</button>
                           </form>
                       </div>

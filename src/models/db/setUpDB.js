@@ -37,10 +37,11 @@ const createRoomsTableSQL = `
         code VARCHAR(10) UNIQUE DEFAULT NULL,
         status ENUM('waiting', 'in-progress', 'finished') DEFAULT 'waiting',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        current_turn_player_id INT DEFAULT NULL,
         FOREIGN KEY (player_one_id) REFERENCES users(id),
         FOREIGN KEY (player_two_id) REFERENCES users(id)
     )
-`;
+`
 
 const createPlayersTableSQL = `
     CREATE TABLE IF NOT EXISTS players (
@@ -175,7 +176,6 @@ function setUpDB() {
         .then(() => executeQuery(connection, createEnergyFarmerCardsTableSQL))
         .then(() => executeQuery(connection, createRoomsTableSQL))
         .then(() => executeQuery(connection, createPlayersTableSQL))
-        //.then(() => executeQuery(connection, createUsersCardsTableSQL))
         .then(() => executeQuery(connection, createBattleLogsTableSQL))
         .then(() => executeQuery(connection, createPlayersCardsTableSQL))
         .then(() => connection.promise().query(dropCardInsertionTriggerSQL))

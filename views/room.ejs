@@ -2,21 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Waiting room</title>
-    <link rel="stylesheet" href="/css/room.css">
+    <title>Room View</title>
 </head>
 <body>
-    <% if (format === "code-form") { %>
-    <%- include("./partials/code-form") %>
-    <% } else if (format === "private-room"){ %>
-    <link rel="stylesheet" href="/css/fire.css">
-    <%- include("./partials/waiting-room") %>
-    <% } else { %>
-    <%- include("./partials/waiting-room") %>
-    <link rel="stylesheet" href="/css/fire.css">
-    <link rel="stylesheet" href="/css/waiting-phrase.css">
-    <%- include("./partials/waiting-phrase") %>
-    <% }%>
+<h1>Room View</h1>
 
+<p><strong>Format:</strong> <%= format %></p>
+
+<% if (room.code) { %>
+    <p><strong>Room Code:</strong> <%= room.code %></p>
+<% } %>
+
+<div>
+    <h2>Player</h2>
+    <p>Username: <%= player.username %></p>
+</div>
+
+<div>
+    <h2>Opponent</h2>
+    <% if (opponent) { %>
+        <p>Username: <%= opponent.username %></p>
+    <% } else { %>
+        <p><em>Waiting for opponent...</em></p>
+    <% } %>
+</div>
 </body>
 </html>

@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.use('/auth', authRouter);  // Responsible for authentification
 router.use('/profile', profileRouter);
-router.use('room', roomRouter);
+router.use('/room', roomRouter);
 router.use('/game', gameRouter);
 router.use('/images', imageRouter);
 

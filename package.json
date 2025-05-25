@@ -20,6 +20,7 @@
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.0",
     "mysql2": "^3.14.0",
     "nodemailer": "^6.10.0",
     "socket.io": "^4.8.1"
