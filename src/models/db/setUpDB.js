@@ -66,40 +66,11 @@ const createCardsTableSQL = `
         cost INT NOT NULL,
         team_type ENUM('survivors', 'infected'),
         card_type ENUM('creature', 'spell', 'leader', 'energy_farmer'),
-        description VARCHAR(255) DEFAULT NULL
+        description VARCHAR(255) DEFAULT NULL,
+        deck_quantity INT NOT NULL DEFAULT 1
     )
 `;
 
-const createCreaturesCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS creatures_cards (
-        id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
-        special_ability VARCHAR(50) DEFAULT NULL
-    )
-`;
-
-const createSpellsCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS spells_cards (
-        id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
-        effect VARCHAR(255) DEFAULT NULL
-    )
-`;
-
-const createLeadersCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS leaders_cards (
-    id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
-    bonus_type ENUM('attack', 'defence', 'default') DEFAULT 'default',
-    bonus_value INT DEFAULT 0
-)
-`;
-
-const createEnergyFarmerCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS energy_farmers_cards (
-        id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
-        energy INT DEFAULT 0,
-        penalty INT DEFAULT 0,
-        max_instances INT DEFAULT 4
-    )
-`
 
 const createBattleLogsTableSQL = `
     CREATE TABLE IF NOT EXISTS battle_logs (
@@ -128,34 +99,6 @@ const createPlayersCardsTableSQL = `
 `;
 
 
-const dropCardInsertionTriggerSQL = `
-DROP TRIGGER IF EXISTS after_insert_card;
-`
-
-const createCardInsertionTriggerSQL = `
-CREATE TRIGGER after_insert_card
-AFTER INSERT ON cards
-FOR EACH ROW
-BEGIN
-    IF NEW.card_type = 'energy_farmer' THEN
-        INSERT INTO energy_farmers_cards (id)
-        VALUES (NEW.id);
-    END IF;
-    IF NEW.card_type = 'creature' THEN
-        INSERT INTO creatures_cards (id)
-        VALUES (NEW.id);
-    END IF;
-    IF NEW.card_type = 'spell' THEN
-        INSERT INTO spells_cards (id)
-        VALUES (NEW.id);
-    END IF;
-    IF NEW.card_type = 'leader' THEN
-        INSERT INTO leaders_cards (id)
-        VALUES (NEW.id);
-    END IF;
-END;
-`;
-
 function setUpDB() {
     executeQuery(connection, `CREATE DATABASE IF NOT EXISTS ${dbName};`)
         .then(() => executeQuery(connection, `DROP USER IF EXISTS ${dbUser}@'localhost';`))
@@ -170,20 +113,11 @@ function setUpDB() {
         }))
         .then(() => executeQuery(connection, createUsersTableSQL))
         .then(() => executeQuery(connection, createCardsTableSQL))
-        .then(() => executeQuery(connection, createCreaturesCardsTableSQL))
-        .then(() => executeQuery(connection, createSpellsCardsTableSQL))
-        .then(() => executeQuery(connection, createLeadersCardsTableSQL))
-        .then(() => executeQuery(connection, createEnergyFarmerCardsTableSQL))
         .then(() => executeQuery(connection, createRoomsTableSQL))
         .then(() => executeQuery(connection, createPlayersTableSQL))
         .then(() => executeQuery(connection, createBattleLogsTableSQL))
         .then(() => executeQuery(connection, createPlayersCardsTableSQL))
-        .then(() => connection.promise().query(dropCardInsertionTriggerSQL))
-        .then(() => connection.promise().query(createCardInsertionTriggerSQL))
         .then(() => executeQuery(connection, cardsData))
-        .then(() => executeQuery(connection, leaderData))
-        .then(() => executeQuery(connection, spellData))
-        .then(() => executeQuery(connection, energyData))
         .then(() => console.log('Successfully set up DB'))
         .catch((err) => console.error("Error during MySQL setup: ", err))
         .finally(() => connection.end());
