@@ -1,9 +1,9 @@
 const cardsData = `
 INSERT INTO cards (name, image_url, attack, defense, cost, team_type, card_type, description) VALUES
-('goodGuy1', 'card1.png', 5, 4, 6, 'survivors', 'creature', 'A good guy'),
+('goodGuy1', 'card0.png', 5, 4, 6, 'survivors', 'creature', 'A good guy'),
 ('goodGuy2', 'card2.png', 4, 3, 7, 'survivors', 'creature', 'A good guy'),
 ('goodGuy3', 'card3.png', 6, 2, 6, 'survivors', 'creature', 'A good guy'),
-('goodGuy4', 'card.png', 7, 3, 5, 'survivors', 'creature', 'A good guy'),
+('goodGuy4', 'card1.png', 7, 3, 5, 'survivors', 'creature', 'A good guy'),
 ('goodGuy5', 'card5.png', 3, 4, 8, 'survivors', 'creature', 'A good guy'),
 ('goodGuy6', 'card6.png', 5, 5, 5, 'survivors', 'creature', 'A good guy'), 
 ('goodGuy7', 'card7.png', 4, 6, 5, 'survivors', 'creature', 'A good guy'),
