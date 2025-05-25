@@ -5,7 +5,8 @@
     <title>Main Menu</title>
     <link rel="stylesheet" href="/css/menu.css">
     <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Poppins&amp;display=swap'>
-    
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <script src="/js/reload.js"></script>
 </head>
 <body>
   <div class="main-bg">
@@ -14,7 +15,7 @@
       </div>
 
       <header class="game-header">
-          <h1>GAME NAME</h1>
+          <h1>INFECTED ARENA</h1>
       </header>
         
       <a href="/profile/<%= user.id %>">
@@ -26,48 +27,76 @@
           <img class="human" src="/images/menu_human.png" alt="Human">
         
           <div class="menu-wrapper">
-              <div class="quick-join-wrapper">
+              <!--<div class="quick-join-wrapper">
                   <label class="quick-join-label">Want to quick join?</label>
                   <form action="/room/random" method="POST">
                       <button id="quick-join-btn" type="submit">Join the Game</button>
                   </form>
-              </div>
+              </div>-->
 
+              <div class="room-list-container">
               <div class="room-list">
+                <div id="room-loading-overlay">
+                    <div class="loading-text">Loading...</div>
+                </div>
+                <button id="reload-rooms-btn" title="Reload Room List">⟳</button>
                   <div class="title">
                       <span>Available Rooms</span>
                   </div>
-                      <table class="room-table">
-                          <thead>
-                              <tr>
-                                  <th>Room ID</th>
-                                  <th>Status</th>
-                                  <th>Players</th>
-                                  <th></th>
-                              </tr>
-                          </thead>
 
-                          <tbody>
-                              <% rooms.forEach((room) => { 
+                  <div class="room-table-wrapper">
+                    <table class="room-table">
+                      <thead>
+                        <tr>
+                          <th>Room ID</th>
+                          <th>Status</th>
+                          <th>Players</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                    </table>
+                
+                    <div class="room-table-body">
+                      <table class="room-table">
+                        <tbody>
+                            <% 
+                              const visibleRooms = rooms.filter(room => room.status !== 'finished');
+                              if (visibleRooms.length === 0) { 
+                            %>
+                              <tr>
+                                <td colspan="4" style="text-align: center; color: rgba(255, 255, 255, 0.7); font-style: italic; padding: 100px 0;">
+                                  It is weirdly quiet here today...
+                                </td>
+                              </tr>
+                            <% } else {
+                              visibleRooms.forEach((room, index) => {
                                 const players = room.player_two_id ? 2 : 1;
                                 const isFull = players === 2;
-                              %>
-                              
+                            %>
                               <tr>
-                                  <td>#<%= room.id %></td>
-                                  <td><%= room.status %></td>
-                                  <td><%= players %> / 2</td>
-                                  <td>
-                                      <form action="/api/room/join/<%= room.id %>" method="POST">
-                                          <input type="hidden" name="code" value="00005">
-                                          <button class="join-button" type="submit" >Join</button>
-                                      </form>
-                                  </td>
+                                <td>
+                                  <% if (room.code) { %>
+                                    <box-icon type="solid" name="lock-alt" size="1em" color="white"></box-icon>
+                                  <% } %>
+                                  #<%= index + 1 %>
+                                </td>
+                                <td><%= room.status %></td>
+                                <td><%= players %> / 2</td>
+                                <td>
+                                  <form action="/api/room/join/<%= room.id %>" method="POST">
+                                    <input type="hidden" name="code" value="00005">
+                                    <button class="join-button" type="submit" <%= isFull ? 'disabled' : '' %>>Join</button>
+                                  </form>
+                                </td>
                               </tr>
-                              <% }) %>
+                            <% }) } %>
                           </tbody>
+                          
                       </table>
+                    </div>
                   </div>
+                </div>
+                
                 
                   <div class="room-creator">
                       <h3>Create your own room?</h3>
@@ -82,6 +111,7 @@
                       </div>
                   </div>
             </div>
+        </div>
         </div>
     </div>
 </body>

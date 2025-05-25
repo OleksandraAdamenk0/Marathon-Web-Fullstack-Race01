@@ -83,15 +83,17 @@ button {
 }
 
 .room-table {
+  font-size: 1.1em;
   border-collapse: collapse;
 }
   
 .room-table th,
 .room-table td {
-  padding: 0.75em 1em;
+  padding: 0.75em 1.4em;
   text-align: center;
   color: white;
   width: 700px;
+  
 }
   
 .room-table th {
@@ -109,6 +111,69 @@ button {
 
 }
 
+.room-table-wrapper {
+  max-width: 700px;
+  width: 100%;
+  overflow: hidden;
+}
+.room-table td:last-child {
+  width: 80px;
+}
+
+
+.room-table-body {
+  max-height: 300px;
+  position: relative;
+  overflow: overlay;
+}
+
+.room-table-body table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.room-table-body td {
+  background: transparent;
+}
+
+.room-table-body::-webkit-scrollbar {
+  width: 3px;
+  position: absolute;
+  right: 0;
+  overflow: overlay;
+}
+
+
+.room-table-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.room-table-body::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.room-table-body::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+#reload-rooms-btn {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  font-size: 1.4em;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  background: #c6c3c3;
+  padding: 10px 20px;
+  transition: all 0.2s ease-in-out;
+}
+
+#reload-rooms-btn:hover {
+  background: #fff;
+}
 
 button:disabled {
   background-color: #aaa;
@@ -162,7 +227,33 @@ button:disabled {
   box-shadow: -15px 0 0 0 #c6c3c3;
 }
   
-  
+#room-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  color: white;
+  font-size: 1.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: 20px;
+  pointer-events: none;
+  text-align: center;
+}
+
+
+.loading-text {
+  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+
 .room-list {
   position: relative;
   padding-top: 5em;
@@ -175,6 +266,7 @@ button:disabled {
   padding-right: 2em;
   padding-bottom: 2em;
   color: white;
+  margin-left: 40px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   width: 90%;
   max-width: 700px;
@@ -203,13 +295,13 @@ button:disabled {
 .menu-wrapper button,
 .room-creator button {
   background: #c6c3c3;
-  backdrop-filter: blur(10px);
   border: none;
   border-radius: 30px;
   padding: 0.6em 1.7em;
-  font-weight: 600;
+  font-weight: bold;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  font-size: 0.9em;
 }
 
 .join-button:hover,
@@ -222,6 +314,11 @@ button:disabled {
   background-color: #aaa;
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+.join-button {
+  margin: 0 auto;
+  display: block;
 }
 
 .room-creator h3 {
@@ -246,8 +343,11 @@ button:disabled {
   gap: 1em;
   justify-content: center;
   margin-top: 0.5em;
-  padding-right: 2em;
   width: 100%; 
+}
+
+.creator-buttons button{
+  font-size: 1em;
 }
 
 .fog-container,
