@@ -59,7 +59,8 @@
                                   <td><%= players %> / 2</td>
                                   <td>
                                       <form action="/api/room/join/<%= room.id %>" method="POST">
-                                          <button class="join-button" type="submit" <%= isFull ? 'disabled' : '' %>>Join</button>
+                                          <input type="hidden" name="code" value="00005">
+                                          <button class="join-button" type="submit" >Join</button>
                                       </form>
                                   </td>
                               </tr>

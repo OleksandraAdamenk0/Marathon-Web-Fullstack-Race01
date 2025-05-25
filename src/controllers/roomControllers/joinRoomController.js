@@ -13,21 +13,27 @@ module.exports = async (req, res) => {
 
         const joinedRoom = await roomModel.getById(roomId);
         if (!joinedRoom) {
-            return res.status(400).json({ error: 'Failed to find room with given id' });
+            return res.status(400).json({error: 'Failed to find room with given id'});
         }
 
         if (joinedRoom.status !== 'waiting' || joinedRoom.player_two_id !== null) {
-            return res.status(400).json({ error: 'Room is not available' });
+            return res.status(400).json({error: 'Room is not available'});
         }
 
-        const { code } = req.body;
-        if (joinedRoom.code !== code) {
-            return res.status(400).json({ error: 'Invalid room code' });
+        if (joinedRoom.code !== null) {
+            const {code} = req.body;
+            if (joinedRoom.code !== code) {
+                return res.status(400).json({error: 'Invalid room code'});
+            }
+        }
+
+        if (userId === joinedRoom.player_one_id || userId === joinedRoom.player_two_id) {
+            return res.status(400).json({error: 'You are already in this room'});
         }
 
         const setSecondPlayerResult = await roomModel.setSecondPlayer(joinedRoom.id, userId);
         if (setSecondPlayerResult === null) {
-            return res.status(500).json({ error: 'Failed to set second player' });
+            return res.status(500).json({error: 'Failed to set second player'});
         }
 
         if (req.query.json === 'true') {
