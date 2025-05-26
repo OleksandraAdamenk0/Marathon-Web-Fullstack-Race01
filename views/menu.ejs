@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Menu</title>
+    <link rel="stylesheet" href="/css/menu.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Poppins&amp;display=swap'>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      window.USER_ID = "<%= user.id %>";
+    </script>
+    <script type="module" src="/js/socket.js"></script>
+    <script type="module" src="/js/sessionSocket.js"></script>
+    <script type="module" src="/js/reload.js"></script>
+</head>
+<body>
+  <div class="main-bg">
+      <div class="fog-container">
+          <div class="fog"></div>
+      </div>
+
+      <header class="game-header">
+          <h1>INFECTED ARENA</h1>
+      </header>
+        
+      <a href="/profile/<%= user.id %>">
+          <img src="<%= user.avatar_url %>" alt="Profile" class="profile-icon">
+      </a>
+        
+      <div class="menu-scene">
+          <img class="zombie" src="/images/menu_zombie.png" alt="Zombie">
+          <img class="human" src="/images/menu_human.png" alt="Human">
+        
+          <div class="menu-wrapper">
+              <!--<div class="quick-join-wrapper">
+                  <label class="quick-join-label">Want to quick join?</label>
+                  <form action="/room/random" method="POST">
+                      <button id="quick-join-btn" type="submit">Join the Game</button>
+                  </form>
+              </div>-->
+
+              <div class="room-list-container">
+              <div class="room-list">
+                <div id="room-loading-overlay">
+                    <div class="loading-text">Loading...</div>
+                </div>
+                <button id="reload-rooms-btn" title="Reload Room List">⟳</button>
+                  <div class="title">
+                      <span>Available Rooms</span>
+                  </div>
+
+                  <div class="room-table-wrapper">
+                    <table class="room-table">
+                      <thead>
+                        <tr>
+                          <th>Room ID</th>
+                          <th>Status</th>
+                          <th>Players</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                    </table>
+                
+                    <div class="room-table-body">
+                      <table class="room-table">
+                        <tbody>
+                              <tr>
+                                <td colspan="4" style="text-align: center; color: rgba(255, 255, 255, 0.7); font-style: italic; padding: 100px 0;">
+                                  It is weirdly quiet here today...
+                                </td>
+                              </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                
+                
+                  <div class="room-creator">
+                      <h3>Create your own room?</h3>
+                      <div class = "creator-buttons">
+                          <form action="/api/room/public/create" method="POST">
+                              <button type="submit" name="roomType" value="public">Public</button>
+                          </form>
+
+                          <form action="/api/room/private/create" method="POST">
+                              <button type="submit" name="roomType" value="private">Private</button>
+                          </form>
+                      </div>
+                  </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</body>
+</html>
