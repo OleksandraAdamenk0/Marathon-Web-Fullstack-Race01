@@ -1,5 +1,5 @@
 const Model = require('./Model');
-const HANDSIZE = 6;
+const HANDSIZE = 5;
 
 class Card extends Model {
     constructor() {
@@ -42,6 +42,13 @@ class Card extends Model {
     }
 
     async buildPlayerDeck(playerId, roomId, teamType) {
+    
+	    await this.query(`
+	    DELETE FROM players_cards 
+	    WHERE player_id = ? AND room_id = ?
+	`, [playerId, roomId]);
+	console.log(`[Card Model] Clearing old deck for player ${playerId} in room ${roomId}`);
+
         console.log(`[Card Model] Building deck for player ${playerId}, team: ${teamType}`);
 
         try {
@@ -53,18 +60,21 @@ class Card extends Model {
             }
 
             const cardInstances = [];
-
+const cardCountMap = {};
             cards.forEach(card => {
-                for (let i = 1; i <= card.deck_quantity; i++) {
-                    cardInstances.push({
-                        player_id: playerId,
-                        card_id: card.id,
-                        room_id: roomId,
-                        zone: 'deck',
-                        instance_number: i
-                    });
-                }
-            });
+    if (!cardCountMap[card.id]) cardCountMap[card.id] = 0;
+
+    for (let i = 1; i <= card.deck_quantity; i++) {
+        cardCountMap[card.id]++;
+        cardInstances.push({
+            player_id: playerId,
+            card_id: card.id,
+            room_id: roomId,
+            zone: 'deck',
+            instance_number: cardCountMap[card.id]
+        });
+    }
+});
 
             if (cardInstances.length > 0) {
                 const insertSql = `
@@ -133,24 +143,35 @@ class Card extends Model {
     }
 
     async shuffleDeck(playerId, roomId) {
-        try {
-            const deckCards = await this.getPlayerCardsByZone(playerId, roomId, 'deck');
+    try {
+        const deckCards = await this.getPlayerCardsByZone(playerId, roomId, 'deck');
 
-            const shuffledPositions = deckCards.map((_, index) => index + 1).sort(() => Math.random() - 0.5);
+        const shuffledPositions = deckCards.map((_, index) => index + 1).sort(() => Math.random() - 0.5);
 
-            for (let i = 0; i < deckCards.length; i++) {
-                await this.query(
-                    'UPDATE players_cards SET position = ? WHERE id = ?',
-                    [shuffledPositions[i], deckCards[i].id]
-                );
-            }
-
-            console.log(`[Card Model] Shuffled deck for player ${playerId}`);
-        } catch (error) {
-            console.error('[Card Model] Error shuffling deck:', error);
-            throw error;
+        for (let i = 0; i < deckCards.length; i++) {
+            await this.query(
+                `
+                UPDATE players_cards 
+                SET position = ? 
+                WHERE player_id = ? AND room_id = ? AND card_id = ? AND instance_number = ?
+                `,
+                [
+                    shuffledPositions[i],
+                    deckCards[i].player_id,
+                    deckCards[i].room_id,
+                    deckCards[i].card_id,
+                    deckCards[i].instance_number
+                ]
+            );
         }
+
+        console.log(`[Card Model] Shuffled deck for player ${playerId}`);
+    } catch (error) {
+        console.error('[Card Model] Error shuffling deck:', error);
+        throw error;
     }
+}
+
 
     async drawStartingHand(playerId, roomId, handSize) {
         try {
@@ -176,7 +197,8 @@ class Card extends Model {
             FROM players_cards pc
             JOIN cards c ON pc.card_id = c.id
             WHERE pc.player_id = ? AND pc.room_id = ? AND pc.zone = ?
-            ORDER BY pc.position ASC, pc.id ASC
+            ORDER BY pc.position ASC, pc.card_id ASC, pc.instance_number ASC
+
         `;
 
         try {
