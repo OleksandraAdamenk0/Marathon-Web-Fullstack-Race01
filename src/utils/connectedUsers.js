@@ -21,9 +21,14 @@ function hasUser(userId) {
     return connectedUsers.has(userId);
 }
 
+function listUsers() {
+    return Array.from(connectedUsers.keys());
+}
+
 module.exports = {
     addUser,
     removeUserBySocket,
     getSocketId,
     hasUser,
+    listUsers,
 };

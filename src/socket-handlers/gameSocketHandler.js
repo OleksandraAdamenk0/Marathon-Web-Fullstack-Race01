@@ -49,6 +49,7 @@ class GameSocketHandler {
         sendMessageToUser(this.io, userId, 'role-assigned', { role: assigned });
 
         const players = await Player.getPlayersByRoomId(roomId);
+        console.log(players);
         if (players.length === 2) {
             const [p1, p2] = players;
 
