@@ -96,17 +96,9 @@ body {
     grid-template-rows: repeat(6, 1fr);
     column-gap: 2%;
 
-    /*grid-template-areas:*/
-    /*        "timer enemy-troop-1 enemy-troop-2 enemy-troop-3 enemy-troop-4 enemy-troop-5 ."*/
-    /*        ". . . . ."*/
-    /*        "turn-indicator . . . ."*/
-    /*        ". . . . ."*/
-    /*        "farmers . . . leader"*/
-    /*        "farmers player-troop-1 player-troop-2 player-troop-3 player-troop-4 player-troop-5 leader";*/
-
     margin-bottom: 2%;
     padding: 2%;
-    background: url("battlefield-background.png");
+    background: url("/images/battlefield-background.png");
     background-size: cover;
     border: 4px solid #423531;
 }

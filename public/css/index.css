@@ -34,6 +34,7 @@ menu {
     padding: 16px 24px;
 
     background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
     border-bottom-left-radius: 2em;
     border-bottom-right-radius: 2em;
 }

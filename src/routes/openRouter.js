@@ -13,9 +13,6 @@ router.get('/index', (req, res) => {res.render('index');});
 
 router.get('/menu', authenticateAccessToken, getMenuController);
 
-router.get('/about', (req, res) => {res.render('about');});
-router.get('/rules', (req, res) => {res.render('rules');});
-
 router.get('/registration', (req, res) => {res.render('auth', {format: 'registration'});});
 router.get('/login', (req, res) => {res.render('auth', {format: 'login'});});
 
