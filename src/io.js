@@ -1,13 +1,24 @@
-const http  = require('node:http');
-const socket = require("socket.io");
-
+// set up socket.io
+const http = require('http');
+const { Server } = require('socket.io');
 const app = require('./app');
+const registerHandlers = require('./socket/registerHandlers');
 
-const HTTPserver = http.createServer(app)
-const io = new socket.Server(HTTPserver);
+const server = http.createServer(app);
 
-io.on('connection', (socket) => {
-    console.log('a user connected', socket.id);
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+    }
 });
 
-module.exports = HTTPserver
+app.set('io', io);
+
+io.on('connection', (socket) => {
+    console.log('🟢 WS Connected:', socket.id);
+    registerHandlers(io, socket);
+});
+
+module.exports = server;
+

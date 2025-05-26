@@ -37,28 +37,18 @@ const createRoomsTableSQL = `
         code VARCHAR(10) UNIQUE DEFAULT NULL,
         status ENUM('waiting', 'in-progress', 'finished') DEFAULT 'waiting',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        current_turn_player_id INT DEFAULT NULL,
         FOREIGN KEY (player_one_id) REFERENCES users(id),
         FOREIGN KEY (player_two_id) REFERENCES users(id)
     )
-`;
-
-const createUsersCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS users_cards (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        user_id INT NOT NULL,
-        card_id INT NOT NULL,
-        room_id INT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (card_id) REFERENCES cards(id),
-        FOREIGN KEY (room_id) REFERENCES rooms(id)
-    )
-`;
+`
 
 const createPlayersTableSQL = `
     CREATE TABLE IF NOT EXISTS players (
         id INT PRIMARY KEY AUTO_INCREMENT,
         user_id INT NOT NULL,
         room_id INT NOT NULL,
+        role ENUM('survivor', 'infected') NOT NULL,
         health INT NOT NULL DEFAULT 10,
         energy INT NOT NULL DEFAULT 10,
         FOREIGN KEY (user_id) REFERENCES users(id),
@@ -76,40 +66,11 @@ const createCardsTableSQL = `
         cost INT NOT NULL,
         team_type ENUM('survivors', 'infected'),
         card_type ENUM('creature', 'spell', 'leader', 'energy_farmer'),
-        description VARCHAR(255) DEFAULT NULL
+        description VARCHAR(255) DEFAULT NULL,
+        deck_quantity INT NOT NULL DEFAULT 1
     )
 `;
 
-const createCreaturesCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS creatures_cards (
-        id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
-        special_ability VARCHAR(50) DEFAULT NULL
-    )
-`;
-
-const createSpellsCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS spells_cards (
-        id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
-        effect VARCHAR(255) DEFAULT NULL
-    )
-`;
-
-const createLeadersCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS leaders_cards (
-    id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
-    bonus_type ENUM('attack', 'defence', 'default') DEFAULT 'default',
-    bonus_value INT DEFAULT 0
-)
-`;
-
-const createEnergyFarmerCardsTableSQL = `
-    CREATE TABLE IF NOT EXISTS energy_farmers_cards (
-        id INT PRIMARY KEY REFERENCES cards (id) ON DELETE CASCADE,
-        energy INT DEFAULT 0,
-        penalty INT DEFAULT 0,
-        max_instances INT DEFAULT 4
-    )
-`
 
 const createBattleLogsTableSQL = `
     CREATE TABLE IF NOT EXISTS battle_logs (
@@ -123,33 +84,22 @@ const createBattleLogsTableSQL = `
     )
 `;
 
-const dropCardInsertionTriggerSQL = `
-DROP TRIGGER IF EXISTS after_insert_card;
-`
-
-const createCardInsertionTriggerSQL = `
-CREATE TRIGGER after_insert_card
-AFTER INSERT ON cards
-FOR EACH ROW
-BEGIN
-    IF NEW.card_type = 'energy_farmer' THEN
-        INSERT INTO energy_farmers_cards (id)
-        VALUES (NEW.id);
-    END IF;
-    IF NEW.card_type = 'creature' THEN
-        INSERT INTO creatures_cards (id)
-        VALUES (NEW.id);
-    END IF;
-    IF NEW.card_type = 'spell' THEN
-        INSERT INTO spells_cards (id)
-        VALUES (NEW.id);
-    END IF;
-    IF NEW.card_type = 'leader' THEN
-        INSERT INTO leaders_cards (id)
-        VALUES (NEW.id);
-    END IF;
-END;
+const createPlayersCardsTableSQL = `
+    CREATE TABLE IF NOT EXISTS players_cards (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        player_id INT NOT NULL,
+        card_id INT NOT NULL,
+        room_id INT NOT NULL,
+        zone ENUM('deck', 'hand', 'board', 'farm', 'leader', 'discard') NOT NULL,
+        position INT DEFAULT NULL,
+        is_active BOOLEAN DEFAULT FALSE,
+        instance_number INT NOT NULL DEFAULT 1,
+        UNIQUE KEY unique_card_instance (player_id, room_id, card_id, instance_number),
+        FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
+        FOREIGN KEY (card_id) REFERENCES cards(id) ON DELETE CASCADE
+    );
 `;
+
 
 function setUpDB() {
     executeQuery(connection, `CREATE DATABASE IF NOT EXISTS ${dbName};`)
@@ -165,20 +115,11 @@ function setUpDB() {
         }))
         .then(() => executeQuery(connection, createUsersTableSQL))
         .then(() => executeQuery(connection, createCardsTableSQL))
-        .then(() => executeQuery(connection, createCreaturesCardsTableSQL))
-        .then(() => executeQuery(connection, createSpellsCardsTableSQL))
-        .then(() => executeQuery(connection, createLeadersCardsTableSQL))
-        .then(() => executeQuery(connection, createEnergyFarmerCardsTableSQL))
         .then(() => executeQuery(connection, createRoomsTableSQL))
         .then(() => executeQuery(connection, createPlayersTableSQL))
-        .then(() => executeQuery(connection, createUsersCardsTableSQL))
         .then(() => executeQuery(connection, createBattleLogsTableSQL))
-        .then(() => connection.promise().query(dropCardInsertionTriggerSQL))
-        .then(() => connection.promise().query(createCardInsertionTriggerSQL))
+        .then(() => executeQuery(connection, createPlayersCardsTableSQL))
         .then(() => executeQuery(connection, cardsData))
-        .then(() => executeQuery(connection, leaderData))
-        .then(() => executeQuery(connection, spellData))
-        .then(() => executeQuery(connection, energyData))
         .then(() => console.log('Successfully set up DB'))
         .catch((err) => console.error("Error during MySQL setup: ", err))
         .finally(() => connection.end());

@@ -3,8 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <title>Shelter</title>
+    <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
-Home
+
+<header class="image-background-container">
+    <menu>
+        <a href="#"><img src="/images/logo.png" alt="logo"></a>
+
+        <ul>
+            <li><a href="#rules">guide</a></li>
+            <li><a href="#about">about</a></li>
+            <li><a href="#contact">contact</a></li>
+        </ul>
+
+        <a href="/login"><img src="/images/login.png" alt="login"></a>
+    </menu>
+
+    <div class="card">
+        <h2 >Survive. Infect. Decide.</h2>
+        <p>A game where anyone can turn. Infection spreads. Paranoia grows. Will you make it to the end?</p>
+        <a href="/login" class="btn">Begin the Game</a>
+    </div>
+</header>
+
+<main>
+<h1 class="upper">Infected Arena</h1>
+
+    <div id="description">
+        <div class="general-info">
+            <h2>Welcome to Infected Arena!</h2>
+            <div class="facts">
+                <p>Step into a post-apocalyptic world where every card tells a story.</p>
+                <p>Build your card team, use spells, survive the journey or infect the last survivor, and uncover secrets along the way.</p>
+                <p>Here are a few featured cards — meet some of the fascinating characters you’ll encounter:</p>
+            </div>
+
+        </div>
+
+        <div class="cards-info">
+            <ul class="card-container">
+                <li class="game-card" data-index="0"><img data-index="0" src="/images/card0.png" alt="card 1"></li>
+                <li class="game-card" data-index="1"><img data-index="1" src="/images/card1.png" alt="card 1"></li>
+                <li class="game-card" data-index="2"><img data-index="2" src="/images/card2.png" alt="card 1"></li>
+                <li class="game-card" data-index="3"><img data-index="3" src="/images/card3.png" alt="card 1"></li>
+            </ul>
+
+            <div class="card-text">
+                <h3 id="card-name">🛡️ Skyranger</h3>
+                <blockquote class="citation">
+                    "When the skies rain fire, it flies straight into the storm."
+                </blockquote>
+                <p>— <i id="citation-author">Unknown Commander, Battle of the Burning Spires</i></p>
+                <p id="card-description">Forged in the floating citadels of the Northern Reaches, the Skyranger is an armored aerial beast of burden — not for cargo, but for war. Its reinforced hull shrugs off anti-air fire, and its rotating turrets cover the battlefield like a guardian angel. Wherever it lands, the troops rally stronger behind its shadow.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="rules">
+        <h2>🎮 Game guide</h2>
+        <p>Welcome to a 1v1 survival card game where tactics, timing, and your deck decide your fate.</p>
+        <h3>🔗 Game Modes</h3>
+        <ul>
+            <li><b>Public Game</b> — Play instantly with a random opponent.</li>
+            <li><b>Private Game</b> — Invite a friend for a private duel by sharing a code with them.</li>
+        </ul>
+        <h3>⚔️ Roles</h3>
+        <p>At the start of each game, players are randomly assigned one of two roles:</p>
+        <ul>
+            <li><b>The Infected</b> — try to overwhelm your opponent with aggressive tactics.</li>
+            <li><b>The Survivor</b> — hold your ground, defend, and outlast.</li>
+        </ul>
+        <p>Your role determines the cards in your deck and your playstyle.</p>
+
+        <h3>🃏 Card Types</h3>
+        <ul>
+            <li><b>Combat Cards</b> — have Attack and Defense values. Played using Energy.</li>
+            <li><b>Leader Cards</b> — rare draws from the deck that give permanent attack or defense bonuses.</li>
+            <li><b>Spell Cards (coming soon)</b> — powerful effects that can shift the tide of battle.</li>
+
+        </ul>
+
+        <h3>⚡ Energy & Health</h3>
+        <p>Each turn, you gain energy to play cards.</p>
+        <p>To see your or your opponent’s health and energy, hover over the avatar.</p>
+
+        <h3>⏱️ Turn Rules</h3>
+
+        <p>You have 30 seconds to take your turn.</p>
+        <p>During your turn:</p>
+        <ul>
+            <li>Play combat cards by spending energy.</li>
+            <li>When the turn ends, all cards attack and defend simultaneously.</li>
+            <li>If a card receives more damage than its defense, the excess damage hits the player directly.</li>
+        </ul>
+
+        <h3>☠️ Defeat</h3>
+        <p>When your health reaches zero, you lose.</p>
+    </div>
+
+    <div id="about" class="image-background-container">
+        <div class="game-content">
+            <h2>About the Game</h2>
+            <p>This game was built by three students in just 12 days as part of a university learning project.
+                We challenged ourselves to create a functional browser-based game with engaging mechanics, strategic gameplay, and a visually appealing interface.
+                <br>
+                Did we succeed? You decide.
+            </p>
+            <a href="/login" class="btn">Begin the Game</a>
+        </div>
+
+        <div class="authors-content">
+            <h2>Meet the Team</h2>
+            <ul class="authors">
+                <li>
+                    <img src="/images/author1-photo.png" alt="photo">
+                    <div class="author-text">
+                        <h3>Mariia</h3>
+                        <p class="status">Frontend Developer, UI/UX Designer, Layout</p>
+                        <p class="description">Developed the client-side logic, worked on animations, and translated ideas into responsive web interfaces.</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="/images/author2-photo.png" alt="photo">
+                    <div class="author-text">
+                        <h3>Yarik</h3>
+                        <p class="status">Backend Developer, Product Owner, and Team Lead</p>
+                        <p class="description">Architected the server, built core game logic, and made key decisions across the project.</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="/images/author3-photo.png" alt="photo">
+                    <div class="author-text">
+                        <h3>Aleksa</h3>
+                        <p class="status">Authentication, Database, UI Design & Layout</p>
+                        <p class="description">Built the user authentication system, structured the database, and crafted the game’s visual style.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="content">
+        <div id="contact">
+            <p>If you have a question or suggestion, you can contact us at <a href="mailto:cardgame.race01@gmail.com">cardgame.race01@gmail.com</a></p>
+        </div>
+
+        <p>&copy; <span id="year"></span> Cardgame. All rights reserved.</p>
+
+        <div> Login icon was made by <a href="https://www.flaticon.com/authors/febrian-hidayat" title="Febrian Hidayat"> Febrian Hidayat </a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com'</a></div>
+        <div> List icon was made by <a href="https://www.freepik.com" title="Freepik"> Freepik </a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com'</a></div>
+    </div>
+    </footer>
+<script src="/js/index.js"></script>
 </body>
 </html>

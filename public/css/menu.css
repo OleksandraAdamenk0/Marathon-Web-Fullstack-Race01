@@ -1,0 +1,450 @@
+body {
+    overflow-x: hidden;
+}
+  
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+.main-bg {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: url('/images/menubg.png') center center / cover no-repeat;
+    overflow: hidden;
+    z-index: 1;
+    background-color: #000;
+}
+
+.menu-scene {
+    position: relative;
+    top: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.zombie,
+.human {
+  position: absolute;
+  bottom: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.zombie {
+  right: 60%;
+  height: 400px;
+}
+
+.human {
+  left: 60%;
+  height: 420px;
+}
+
+.profile-icon {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  width: 80px;
+  height: 80px;
+  border: 2px solid #c6c3c3;
+  border-radius: 50%;
+  object-fit: cover;
+  background: white;
+  z-index: 3;
+}
+
+button {
+  z-index: 3;
+}
+
+.menu {
+  margin-top: 3em;
+  background-color: white;
+  padding: 2em;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  z-index: 10;
+}
+  
+.menu-wrapper {
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+}
+
+.room-table {
+  font-size: 1.1em;
+  border-collapse: collapse;
+}
+  
+.room-table th,
+.room-table td {
+  padding: 0.75em 1.4em;
+  text-align: center;
+  color: white;
+  width: 700px;
+  
+}
+  
+.room-table th {
+  font-weight: bold
+}
+  
+.room-table tr:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.room-header-row {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  width: 500px;
+
+}
+
+.room-table-wrapper {
+  max-width: 700px;
+  width: 100%;
+  overflow: hidden;
+}
+.room-table td:last-child {
+  width: 80px;
+}
+
+
+.room-table-body {
+  max-height: 300px;
+  position: relative;
+  overflow: overlay;
+}
+
+.room-table-body table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.room-table-body td {
+  background: transparent;
+}
+
+.room-table-body::-webkit-scrollbar {
+  width: 3px;
+  position: absolute;
+  right: 0;
+  overflow: overlay;
+}
+
+
+.room-table-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.room-table-body::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.room-table-body::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+#reload-rooms-btn {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  font-size: 1.4em;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  background: #c6c3c3;
+  padding: 10px 20px;
+  transition: all 0.2s ease-in-out;
+}
+
+#reload-rooms-btn:hover {
+  background: #fff;
+}
+
+button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.title {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  background-color: #c6c3c3;
+  width: fit-content;
+  height: 70px;
+  border-radius: 0 0 20px 20px;
+}
+  
+.title span {
+  font-size: 30px;
+  display: inline;
+  white-space: nowrap;
+  color: #000;
+}
+  
+.title::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -30px;
+  width: 30px;
+  height: 30px;
+  border-top-right-radius: 50%;
+  background: transparent;
+  box-shadow: 15px 0 0 0 #c6c3c3;
+}
+
+.title::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -30px;
+  width: 30px;
+  height: 30px;
+  border-top-left-radius: 50%;
+  background: transparent;
+  box-shadow: -15px 0 0 0 #c6c3c3;
+}
+  
+#room-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  color: white;
+  font-size: 1.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: 20px;
+  pointer-events: none;
+  text-align: center;
+}
+
+
+.loading-text {
+  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+
+.room-list {
+  position: relative;
+  padding-top: 5em;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 2px solid #c6c3c3;
+  border-radius: 20px;
+  padding-left: 2em;
+  padding-right: 2em;
+  padding-bottom: 2em;
+  color: white;
+  margin-left: 40px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 700px;
+  
+}
+  
+.quick-join-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+  padding: 0 2.6em;
+}
+  
+.menu-wrapper .quick-join-label {
+  color: white;
+  font-weight: bold;
+}
+
+.quick-join-label {
+  font-size: 1.1em;
+}
+
+.join-button,
+.menu-wrapper button,
+.room-creator button {
+  background: #c6c3c3;
+  border: none;
+  border-radius: 30px;
+  padding: 0.6em 1.7em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.9em;
+}
+
+.join-button:hover,
+.menu-wrapper button:enabled:hover,
+.room-creator button:hover {
+  background: #fff;
+}
+  
+.join-button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.join-button {
+  margin: 0 auto;
+  display: block;
+}
+
+.room-creator h3 {
+  color:#fff;
+}
+
+.room-creator {
+  position:relative;
+  top: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0 1em;
+}
+  
+.room-creator form {
+  display: inline-block;
+}
+
+.creator-buttons {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+  margin-top: 0.5em;
+  width: 100%; 
+}
+
+.creator-buttons button{
+  font-size: 1em;
+}
+
+.fog-container,
+.fog-container::before,
+.fog-container::after,
+.fog::before,
+.fog::after {
+  pointer-events: none;
+}
+
+.fog-container::before,
+.fog::before,
+.fog-container::after,
+.fog::after {
+    content: "";
+    position: absolute;
+    background-size: cover;
+    background-position: center;
+    background-repeat: repeat-x;
+    z-index: 2;
+}
+
+.fog-container::before,
+.fog-container::after {
+    top: 0;
+    left: -50%;
+    height: 100vh;
+    width: 200vw;
+    z-index: 2;
+}
+
+.fog::before,
+.fog::after {
+    top: 0;
+    left: 150%;
+    height: 100vh;
+    width: 200vw;
+    z-index: 2;
+}
+
+.fog-container::before {
+    background-image: url("../images/fog.png");
+    opacity: 0.5;
+    animation: fog-animation 100s linear infinite;
+    
+}
+
+.fog::before {
+    background-image: url("../images/fog.png");
+    opacity: 0.5;
+    animation: fog-animation 100s linear infinite;
+
+}
+
+@keyframes fog-animation {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+.game-header {
+  top: 1em;
+  border-radius: 20px;
+  width: 65%;
+  height: 100px;
+  margin: 0 auto;
+  background-color: #1c1c1c;
+  position: relative;
+  opacity: 0.9;
+  background-size: contain;
+  background-attachment: fixed;
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+  
+.game-header h1 {
+  color: white;
+  font-family: 'Georgia', serif;
+  font-size: 3em;
+  z-index: 2;
+  margin: 0;
+  text-shadow: 2px 2px 4px black;
+}
+  
+.game-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/images/texture.png');
+  background-size: 1200px 500px;
+  background-repeat: repeat;
+  opacity: 0.1;
+  z-index: 1;
+}
+  
