@@ -17,6 +17,7 @@ class GameSocketHandler {
     }
 
     registerListeners() {
+    console.log('[GameSocket] Registering listeners for socket', this.socket.id);
         this.socket.on('start-game', this.handleStartGame.bind(this));
         this.socket.on('deal-deck', this.handleDealDeck.bind(this));
         this.socket.on('draw-card', this.handleDrawCards.bind(this));
@@ -24,66 +25,62 @@ class GameSocketHandler {
     }
 
     async handleStartGame({ roomId, userId }) {
-        if (!roomId || !userId) {
-            console.warn('[GameSocket] Missing roomId or userId in start-game');
+    if (!roomId || !userId) {
+        console.warn('[GameSocket] Missing roomId or userId in start-game');
+        return;
+    }
+
+    try {
+        const room = await Room.getById(roomId);
+        if (!room) return;
+
+        const existing = await Player.getPlayerByUserAndRoom(userId, roomId);
+        if (existing) {
+            const opponent = await Player.getOpponent(roomId, userId);
+            sendMessageToUser(this.io, userId, 'game-already-started', {
+                role: existing.role,
+                opponent: opponent,
+                currentTurn: room.current_turn_player_id
+            });
             return;
         }
 
-        try {
-            const room = await Room.getById(roomId);
-            if (!room) return;
+        const assigned = await Player.defineRole(roomId, userId, Room);
+        sendMessageToUser(this.io, userId, 'role-assigned', { role: assigned });
 
-            const existing = await Player.getPlayerByUserAndRoom(userId, roomId);
-            if (existing) {
-                // Player already has a role, send room info with opponent details
-                const roomWithPlayers = await Room.getRoomWithPlayers(roomId);
-                const opponentInfo = this.getOpponentInfo(roomWithPlayers, userId);
+        const players = await Player.getPlayersByRoomId(roomId);
+        if (players.length === 2) {
+            const [p1, p2] = players;
 
-                sendMessageToUser(this.io, userId, 'game-already-started', {
-                    role: existing.role,
-                    opponent: opponentInfo,
-                    currentTurn: roomWithPlayers.current_turn_player_id
-                });
-                return;
-            }
-
-            const assigned = await Player.defineRole(roomId, userId, Room);
-
-            // Get updated room info with both players
-            const roomWithPlayers = await Room.getRoomWithPlayers(roomId);
-            const opponentInfo = this.getOpponentInfo(roomWithPlayers, userId);
-
-            sendMessageToUser(this.io, userId, 'role-assigned', {
-                role: assigned,
-                opponent: opponentInfo
+            // Send opponent info to each player
+            sendMessageToUser(this.io, p1.user_id, 'opponent-info', {
+                opponent: {
+                    userId: p2.user_id,
+                    username: p2.username,
+                    role: p2.role
+                }
             });
 
-            // If both players now have roles, notify both about the complete setup
-            if (roomWithPlayers.player1_role && roomWithPlayers.player2_role) {
-                const player1Info = {
-                    userId: roomWithPlayers.player1_user_id,
-                    username: roomWithPlayers.player1_username,
-                    role: roomWithPlayers.player1_role
-                };
-                const player2Info = {
-                    userId: roomWithPlayers.player2_user_id,
-                    username: roomWithPlayers.player2_username,
-                    role: roomWithPlayers.player2_role
-                };
+            sendMessageToUser(this.io, p2.user_id, 'opponent-info', {
+                opponent: {
+                    userId: p1.user_id,
+                    username: p1.username,
+                    role: p1.role
+                }
+            });
 
-                sendMessageToUser(this.io, roomWithPlayers.player1_user_id, 'opponent-info', {
-                    opponent: player2Info
-                });
-                sendMessageToUser(this.io, roomWithPlayers.player2_user_id, 'opponent-info', {
-                    opponent: player1Info
-                });
-            }
-
-            console.log(`[GameSocket] Assigned role ${assigned} to user ${userId} in room ${roomId}`);
-        } catch (err) {
-            console.error('[GameSocket] Failed to handle start-game:', err);
+            // Deal decks to both players
+            await this.handleDealDeck({ roomId, userId: p1.user_id, role: p1.role });
+            await this.handleDealDeck({ roomId, userId: p2.user_id, role: p2.role });
         }
+
+        console.log(`[GameSocket] Assigned role ${assigned} to user ${userId} in room ${roomId}`);
+    } catch (err) {
+        console.error('[GameSocket] Failed to handle start-game:', err);
     }
+}
+
+
 
     async handleDealDeck({ roomId, userId, role }) {
         if (!roomId || !userId || !role) {
@@ -112,15 +109,17 @@ class GameSocketHandler {
                 const hand = await Card.getFormattedPlayerHand(player.id, roomId);
                 const deckStats = await Card.getDeckStats(player.id, roomId);
 
-                sendMessageToUser(this.io, userId, 'deck-built', {
-                    hand: hand,
-                    deckStats: deckStats,
-                    teamType: teamType
-                });
+		console.log(`[Server] Sending deck-built to user ${userId}`);
+               sendMessageToUser(this.io, userId, 'deck-built', {
+  		hand: hand,
+  		deckStats: deckStats,
+  		teamType: teamType
+		});
+
 
                 console.log(`[GameSocket] Successfully built deck for player ${userId} (${role})`);
 
-                // Check if both players are ready to start the match
+
                 const bothReady = await Room.areBothPlayersReady(roomId);
                 if (bothReady) {
                     await this.initializeMatch(roomId);

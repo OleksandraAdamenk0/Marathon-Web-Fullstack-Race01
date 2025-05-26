@@ -27,6 +27,23 @@ class Player extends Model {
             [roomId]
         );
     }
+    
+    async getPlayerByRole(roomId, role) {
+	    const result = await this.query(
+		`SELECT * FROM players WHERE room_id = ? AND role = ? LIMIT 1;`,
+		[roomId, role]
+	    );
+	    return result[0] || null;
+    }
+
+	async getOpponent(roomId, userId) {
+	    const result = await this.query(
+		`SELECT * FROM players WHERE room_id = ? AND user_id != ? LIMIT 1;`,
+		[roomId, userId]
+	    );
+	    return result[0] || null;
+	}
+
 
     async areBothPlayersAssigned(roomId) {
         const players = await this.getPlayersByRoomId(roomId);

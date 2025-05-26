@@ -28,12 +28,15 @@ socket.on('role-assigned', (data) => {
 });
 
 socket.on('game-already-started', (data) => {
-  console.log('[Client] Game already started:', data);
+    console.log('[Client] Game already started:', data);
+    if (!data.role || !data.opponent) {
+      console.warn('Missing data keys:', data);
+    }
 });
 
 socket.on('deck-built', (data) => {
-  console.log('[Client] Received starting hand:', data);
-});
+    console.log('[Client] Received starting hand:', data);
+  });  
 
 socket.on('room-update', async ({ roomId }) => {
     if (!window.ROOM_ID || window.ROOM_ID !== roomId.toString()) return;
@@ -63,6 +66,8 @@ socket.on('room-update', async ({ roomId }) => {
         sessionStorage.setItem('alreadyReloaded', 'true');
         window.location.reload();
       }
+
+      
   
     } catch (err) {
       console.error('[Room UI] Failed to reload room UI:', err);
