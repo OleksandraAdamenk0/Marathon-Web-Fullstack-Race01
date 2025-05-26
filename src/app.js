@@ -3,9 +3,6 @@ const path = require('node:path');
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
-
-require("dotenv").config();
-
 const app = express();
 app.set('title', process.env.TITLE || "Card Game");
 app.set('view engine', 'ejs');

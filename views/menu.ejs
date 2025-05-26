@@ -7,8 +7,12 @@
     <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Poppins&amp;display=swap'>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/sessionSocket.js" type="module"></script>
-    <script src="/js/reload.js"></script>
+    <script>
+      window.USER_ID = "<%= user.id %>";
+    </script>
+    <script type="module" src="/js/socket.js"></script>
+    <script type="module" src="/js/sessionSocket.js"></script>
+    <script type="module" src="/js/reload.js"></script>
 </head>
 <body>
   <div class="main-bg">

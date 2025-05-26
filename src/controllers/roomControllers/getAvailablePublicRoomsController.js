@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
             roomsData: rooms
         });
     } catch (error) {
-        console.error['[getAllAvailableRoomsController]', error];
+        console.error('[getAllAvailableRoomsController]', error);
         res.status(500).json({error: 'Failed to load available rooms'});
     }
 

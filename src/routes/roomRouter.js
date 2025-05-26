@@ -8,6 +8,7 @@ const createPublicRoomController = require('../controllers/roomControllers/creat
 const createPrivateRoomController = require('../controllers/roomControllers/createPrivateRoomController');
 const joinRoomController = require('../controllers/roomControllers/joinRoomController');
 const getAvailablePublicRoomsController = require('../controllers/roomControllers/getAvailablePublicRoomsController');
+const getRoomByIdController = require('../controllers/roomControllers/getRoomByIdController');
 
 router.post('/public/create', authenticateAccessToken, createPublicRoomController);
 router.post('/private/create', authenticateAccessToken,createPrivateRoomController);
@@ -15,5 +16,6 @@ router.post('/private/create', authenticateAccessToken,createPrivateRoomControll
 router.post('/join/:roomId', authenticateAccessToken, joinRoomController);
 
 router.get('/public/available', authenticateAccessToken, getAvailablePublicRoomsController);
+router.get('/:roomId', authenticateAccessToken, getRoomByIdController);
 
 module.exports = router;

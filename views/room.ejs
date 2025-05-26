@@ -6,11 +6,14 @@
     <title>Room</title>
     <link rel="stylesheet" href="/css/room.css">
     <script>
-        const ROOM_ID = "<%= room.id %>";
-        const USER_ID = "<%= player.id %>";
-    </script>
+        window.ROOM_ID = "<%= room.id %>";
+        window.USER_ID = "<%= player.id %>";
+        window.USERNAME = "<%= player.username %>";
+      </script>
+      
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/gameSocket.js"></script>
+    <script type="module" src="/js/gameSocket.js"></script>
+    <script type="module" src="/js/reload.js"></script>
 </head>
 <body>
 

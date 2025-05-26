@@ -15,6 +15,7 @@ class RoomSocketHandler {
     }
 
     async handleJoinRoom({ roomId, user }) {
+     console.log(`[Server] handleJoinRoom triggered for ${user.username} in room ${roomId}`);
         this.socket.join(roomId);
         console.log(`[RoomSocket] ${user.username} (${this.socket.id}) joined room ${roomId}`);
 
@@ -22,6 +23,10 @@ class RoomSocketHandler {
             user,
             socketId: this.socket.id,
         });
+        
+        this.io.to(roomId).emit('room-update', { roomId });
+console.log(`[Server] Emitted room-update for room ${roomId}`);
+
 
         if (await this.utilReadyToStart(roomId)) {
             this.socket.to(roomId).emit('ready-to-start', { roomId });

@@ -32,7 +32,11 @@ class Room extends Model {
     }
 
     async getAvailablePublicRooms() {
-        return await this.query("SELECT * FROM rooms WHERE code = NULL and status = 'waiting'");
+        return await this.query(`
+		SELECT * FROM rooms 
+		WHERE code IS NULL 
+		AND status = 'waiting'
+    `	);
     }
 
     async setFirstPlayer(roomId, userId) {

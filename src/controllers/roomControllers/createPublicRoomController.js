@@ -6,6 +6,7 @@ const roomModel = new Room();
 
 module.exports = async (req, res) => {
     console.log('[CREATE ROOM] Controller hit!');
+    console.log('req.user:', req.user);
     try {
         const userId = req.user.id;
         const user = await userModel.getById(userId);
@@ -13,6 +14,15 @@ module.exports = async (req, res) => {
 
         const room = await roomModel.createPublicRoom(userId);
         if (!room) throw new Error('Failed to insert room in DB');
+        
+        const io = req.app.get('io');
+	io.emit('room-created', {
+	    id: room.id,
+	    status: room.status,
+	    player_one_id: room.player_one_id,
+	    player_two_id: room.player_two_id,
+	    code: room.code
+	});
 
         if (req.query.json === 'true') {
             return res.status(200).json({
