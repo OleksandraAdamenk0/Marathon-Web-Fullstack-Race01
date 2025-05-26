@@ -36,7 +36,21 @@ class Room extends Model {
 		SELECT * FROM rooms 
 		WHERE code IS NULL 
 		AND status = 'waiting'
+        AND player_two_id IS NULL
     `	);
+    }
+
+    async getNextAvailableRoom() {
+        console.log('[RoomModel] Finding next available room...');
+
+        const [rooms] = await this.query(
+            `SELECT * FROM ${this.table} 
+         WHERE status = 'waiting' 
+         AND player_two_id IS NULL 
+         AND code IS NULL 
+         LIMIT 1;`
+        );
+        return rooms || null;
     }
 
     async setFirstPlayer(roomId, userId) {
