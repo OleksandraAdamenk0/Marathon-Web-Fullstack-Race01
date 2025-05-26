@@ -143,34 +143,24 @@ const cardCountMap = {};
     }
 
     async shuffleDeck(playerId, roomId) {
-    try {
-        const deckCards = await this.getPlayerCardsByZone(playerId, roomId, 'deck');
+        try {
+            const deckCards = await this.getPlayerCardsByZone(playerId, roomId, 'deck');
 
-        const shuffledPositions = deckCards.map((_, index) => index + 1).sort(() => Math.random() - 0.5);
+            const shuffledPositions = deckCards.map((_, index) => index + 1).sort(() => Math.random() - 0.5);
 
-        for (let i = 0; i < deckCards.length; i++) {
-            await this.query(
-                `
-                UPDATE players_cards 
-                SET position = ? 
-                WHERE player_id = ? AND room_id = ? AND card_id = ? AND instance_number = ?
-                `,
-                [
-                    shuffledPositions[i],
-                    deckCards[i].player_id,
-                    deckCards[i].room_id,
-                    deckCards[i].card_id,
-                    deckCards[i].instance_number
-                ]
-            );
+            for (let i = 0; i < deckCards.length; i++) {
+                await this.query(
+                    `UPDATE players_cards SET position = ? WHERE id = ?`,
+                    [shuffledPositions[i], deckCards[i].id]
+                );
+            }
+
+            console.log(`[Card Model] Shuffled deck for player ${playerId}`);
+        } catch (error) {
+            console.error('[Card Model] Error shuffling deck:', error);
+            throw error;
         }
-
-        console.log(`[Card Model] Shuffled deck for player ${playerId}`);
-    } catch (error) {
-        console.error('[Card Model] Error shuffling deck:', error);
-        throw error;
     }
-}
 
 
     async drawStartingHand(playerId, roomId, handSize) {

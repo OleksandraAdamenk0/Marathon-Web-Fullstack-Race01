@@ -86,13 +86,15 @@ const createBattleLogsTableSQL = `
 
 const createPlayersCardsTableSQL = `
     CREATE TABLE IF NOT EXISTS players_cards (
+        id INT PRIMARY KEY AUTO_INCREMENT,
         player_id INT NOT NULL,
         card_id INT NOT NULL,
         room_id INT NOT NULL,
         zone ENUM('deck', 'hand', 'board', 'farm', 'leader', 'discard') NOT NULL,
         position INT DEFAULT NULL,
         is_active BOOLEAN DEFAULT FALSE,
-        PRIMARY KEY (player_id, room_id, card_id),
+        instance_number INT NOT NULL DEFAULT 1,
+        UNIQUE KEY unique_card_instance (player_id, room_id, card_id, instance_number),
         FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
         FOREIGN KEY (card_id) REFERENCES cards(id) ON DELETE CASCADE
     );
