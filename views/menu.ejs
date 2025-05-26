@@ -59,39 +59,11 @@
                     <div class="room-table-body">
                       <table class="room-table">
                         <tbody>
-                            <% 
-                              const visibleRooms = rooms.filter(room => room.status !== 'finished');
-                              if (visibleRooms.length === 0) { 
-                            %>
                               <tr>
                                 <td colspan="4" style="text-align: center; color: rgba(255, 255, 255, 0.7); font-style: italic; padding: 100px 0;">
                                   It is weirdly quiet here today...
                                 </td>
                               </tr>
-                            <% } else {
-                              visibleRooms.forEach((room, index) => {
-                                const players = room.player_two_id ? 2 : 1;
-                                const isFull = players === 2;
-                            %>
-                              <tr>
-                                <td>
-                                  <% if (room.code) { %>
-                                    <box-icon type="solid" name="lock-alt" size="1em" color="white"></box-icon>
-                                  <% } %>
-                                  #<%= index + 1 %>
-                                </td>
-                                <td><%= room.status %></td>
-                                <td><%= players %> / 2</td>
-                                <td>
-                                  <form action="/api/room/join/<%= room.id %>" method="POST">
-                                    <input type="hidden" name="code" value="00005">
-                                    <button class="join-button" type="submit" <%= isFull ? 'disabled' : '' %>>Join</button>
-                                  </form>
-                                </td>
-                              </tr>
-                            <% }) } %>
-                          </tbody>
-                          
                       </table>
                     </div>
                   </div>

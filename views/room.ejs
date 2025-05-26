@@ -2,29 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Room View</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room</title>
+    <link rel="stylesheet" href="/css/room.css">
+    <script>
+        const ROOM_ID = "<%= room.id %>";
+        const USER_ID = "<%= player.id %>";
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/gameSocket.js"></script>
 </head>
 <body>
-<h1>Room View</h1>
 
-<p><strong>Format:</strong> <%= format %></p>
+<div class="user-info player-info">
+    <img src="/<%= player.avatar_url %>" alt="avatar" class="avatar" title="Health: 100">
+    
+    <div class="player-name" title="<%= player.username %>">
+    <%= player.username.slice(0, 14) %><%= player.username.length > 14 ? '...' : '' %>
+    </div>
 
-<% if (room.code) { %>
-    <p><strong>Room Code:</strong> <%= room.code %></p>
-<% } %>
-
-<div>
-    <h2>Player</h2>
-    <p>Username: <%= player.username %></p>
+    <!--                of the player login (show the rest on hover)-->
 </div>
 
-<div>
-    <h2>Opponent</h2>
-    <% if (opponent) { %>
-        <p>Username: <%= opponent.username %></p>
-    <% } else { %>
-        <p><em>Waiting for opponent...</em></p>
-    <% } %>
+<div class="container">
+
+
+
+    <div class="game-field">
+        <div class="enemy-row">
+
+            <div class="user-info enemy-info">
+                <% if (opponent) { %>
+                    <img src="/<%= opponent.avatar_url %>" alt="avatar" class="avatar" title="Health: <%= opponent.health || 100 %>">
+                    <div class="player-name" title="<%= opponent.username %>">
+                      <%= opponent.username.slice(0, 14) %><%= opponent.username.length > 14 ? '...' : '' %>
+                    </div>
+                  <% } else { %>
+                    <img src="/uploads/avatars/default.png" alt="avatar" class="avatar" title="Waiting for opponent...">
+                    <div class="player-name" title="Waiting for opponent...">Waiting...</div>
+                  <% } %>
+<!--                of the player login (shor the rest on hover)-->
+            </div>
+
+            <div class="enemy-hand-card"><img src="card-enemy-back.png" alt="card" class="card" id="enemy-card1"></div>
+            <div class="enemy-hand-card"><img src="card-enemy-back.png" alt="card" class="card" id="enemy-card2"></div>
+            <div class="enemy-hand-card"><img src="card-enemy-back.png" alt="card" class="card" id="enemy-card3"></div>
+            <div class="enemy-hand-card"><img src="card-enemy-back.png" alt="card" class="card" id="enemy-card4"></div>
+            <div class="enemy-hand-card"><img src="card-enemy-back.png" alt="card" class="card" id="enemy-card5"></div>
+
+        </div>
+
+        <div class="game-row">
+            <div id="timer-container">
+                <p id="timer-title"> TIMER: </p>
+                <p id="timer-value"> 00:30 </p>
+            </div>
+
+            <div id="turn-indicator-container">
+            <img src="/images/turn.png" alt="insert login here turn" id="turn-indicator">
+<!--                rotate to indicate the enemy turn-->
+            </div>
+
+            <div class="farmers">
+                <div class="player-farmer"><img src="viper-card.png" alt="viper card" class="card player-farmer-card" id="player-farmer1" title="first example of cool nice and easy way to show anything about the card"></div>
+                <div class="player-farmer"><img src="viper-card.png" alt="viper card" class="card player-farmer-card" id="player-farmer2" title="second example of cool nice and easy way to show anything about the card"></div>
+                <div class="player-farmer"><img src="viper-card.png" alt="viper card" class="card player-farmer-card" id="player-farmer3" title="third example of cool nice and easy way to show anything about the card"></div>
+            </div>
+
+            <div class="enemy-troop troop" id="enemy-troop1"><img src="viper-card.png" alt="viper card" class="card enemy-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+            <div class="enemy-troop troop" id="enemy-troop2"><img src="viper-card.png" alt="viper card" class="card enemy-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+            <div class="enemy-troop troop" id="enemy-troop3"><img src="viper-card.png" alt="viper card" class="card enemy-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+            <div class="enemy-troop troop" id="enemy-troop4"><img src="viper-card.png" alt="viper card" class="card enemy-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+            <div class="enemy-troop troop" id="enemy-troop5"><img src="viper-card.png" alt="viper card" class="card enemy-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+
+            <div class="player-troop troop" id="player-troop1"><img src="viper-card.png" alt="viper card" class="card player-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+            <div class="player-troop troop" id="player-troop2"><img src="viper-card.png" alt="viper card" class="card player-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+            <div class="player-troop troop" id="player-troop3"><img src="viper-card.png" alt="viper card" class="card player-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+            <div class="player-troop troop" id="player-troop4"><img src="viper-card.png" alt="viper card" class="card player-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+            <div class="player-troop troop" id="player-troop5"><img src="viper-card.png" alt="viper card" class="card player-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+
+
+            <div class="leader">
+                <div class="player-leader"><img src="viper-card.png" alt="viper card" class="card player-leader-card" id="player-leader" title="first example of cool nice and easy way to show anything about the card"></div>
+            </div>
+
+        </div>
+
+        <div class="player-row">
+            <div class="placeholder"></div>
+            <div class="player-hand"><img src="viper-card.png" alt="viper card" class="card player-hand-card" id="player-card1" title="cool nice and easy way to show the description of the card"></div>
+            <div class="player-hand"><img src="viper-card.png" alt="viper card" class="card player-hand-card" id="player-card2" title="cool nice and easy way to show the description of the card"></div>
+            <div class="player-hand"><img src="viper-card.png" alt="viper card" class="card player-hand-card" id="player-card3" title="cool nice and easy way to show the description of the card"></div>
+            <div class="player-hand"><img src="viper-card.png" alt="viper card" class="card player-hand-card" id="player-card4" title="cool nice and easy way to show the description of the card"></div>
+            <div class="player-hand"><img src="viper-card.png" alt="viper card" class="card player-hand-card" id="player-card5" title="cool nice and easy way to show the description of the card"></div>
+
+        </div>
+    </div>
+
+    <div class="deck-field">
+        <div class="active-deck">
+            <img src="card-full-back.png" alt="deck" class="deck">
+        </div>
+        <div class="graveyard-deck">
+            <img src="card-full-back.png" alt="graveyard" class="graveyard">
+            <img src="card-full-back.png" alt="graveyard" class="graveyard">
+            <img src="card-full-back.png" alt="graveyard" class="graveyard">
+            <img src="card-full-back.png" alt="graveyard" class="graveyard">
+            <img src="card-full-back.png" alt="graveyard" class="graveyard">
+        </div>
+    </div>
+
 </div>
 </body>
 </html>
