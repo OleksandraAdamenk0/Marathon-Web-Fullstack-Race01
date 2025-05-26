@@ -1,5 +1,5 @@
 const Model = require('./Model');
-const HANDSIZE = 6;
+const HANDSIZE = 5;
 
 class Card extends Model {
     constructor() {
@@ -42,6 +42,13 @@ class Card extends Model {
     }
 
     async buildPlayerDeck(playerId, roomId, teamType) {
+    
+	    await this.query(`
+	    DELETE FROM players_cards 
+	    WHERE player_id = ? AND room_id = ?
+	`, [playerId, roomId]);
+	console.log(`[Card Model] Clearing old deck for player ${playerId} in room ${roomId}`);
+
         console.log(`[Card Model] Building deck for player ${playerId}, team: ${teamType}`);
 
         try {
@@ -53,18 +60,21 @@ class Card extends Model {
             }
 
             const cardInstances = [];
-
+const cardCountMap = {};
             cards.forEach(card => {
-                for (let i = 1; i <= card.deck_quantity; i++) {
-                    cardInstances.push({
-                        player_id: playerId,
-                        card_id: card.id,
-                        room_id: roomId,
-                        zone: 'deck',
-                        instance_number: i
-                    });
-                }
-            });
+    if (!cardCountMap[card.id]) cardCountMap[card.id] = 0;
+
+    for (let i = 1; i <= card.deck_quantity; i++) {
+        cardCountMap[card.id]++;
+        cardInstances.push({
+            player_id: playerId,
+            card_id: card.id,
+            room_id: roomId,
+            zone: 'deck',
+            instance_number: cardCountMap[card.id]
+        });
+    }
+});
 
             if (cardInstances.length > 0) {
                 const insertSql = `
@@ -140,7 +150,7 @@ class Card extends Model {
 
             for (let i = 0; i < deckCards.length; i++) {
                 await this.query(
-                    'UPDATE players_cards SET position = ? WHERE id = ?',
+                    `UPDATE players_cards SET position = ? WHERE id = ?`,
                     [shuffledPositions[i], deckCards[i].id]
                 );
             }
@@ -151,6 +161,7 @@ class Card extends Model {
             throw error;
         }
     }
+
 
     async drawStartingHand(playerId, roomId, handSize) {
         try {
@@ -176,7 +187,8 @@ class Card extends Model {
             FROM players_cards pc
             JOIN cards c ON pc.card_id = c.id
             WHERE pc.player_id = ? AND pc.room_id = ? AND pc.zone = ?
-            ORDER BY pc.position ASC, pc.id ASC
+            ORDER BY pc.position ASC, pc.card_id ASC, pc.instance_number ASC
+
         `;
 
         try {

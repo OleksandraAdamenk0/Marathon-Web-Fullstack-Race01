@@ -97,9 +97,9 @@ INSERT INTO cards (name, image_url, attack, defense, cost, team_type, card_type,
 ('Fusion_Beacon', '/images/cards/survivors/Fusion_Beacon.png', 0, 0, 0, 'survivors', 'energy_farmer', 'Effect: Generates +3 Energy per turn. All your units have -1 DEF while activated.', 1),
 
 -- Leaders (3 types, 1 each)
-('survivor_leader_1', 'survivor_leader_1.png', 0, 0, 0, 'survivors', 'leader', 'Commander - Boosts attack of all creatures', 1),
-('survivor_leader_2', 'survivor_leader_2.png', 0, 0, 0, 'survivors', 'leader', 'Defender - Boosts defense of all creatures', 1),
-('survivor_leader_3', 'survivor_leader_3.png', 0, 0, 0, 'survivors', 'leader', 'Strategist - Draws extra cards', 1),
+('survivor_leader_1', 'survivor_leader_1.png', 2, 4, 1, 'survivors', 'leader', 'Commander - Boosts attack of all creatures', 1),
+('survivor_leader_2', 'survivor_leader_2.png', 4, 6, 6, 'survivors', 'leader', 'Defender - Boosts defense of all creatures', 1),
+('survivor_leader_3', 'survivor_leader_3.png', 5, 3, 8, 'survivors', 'leader', 'Strategist - Draws extra cards', 1),
 
 -- Creatures (5 types, 10 each)
 
@@ -115,9 +115,9 @@ INSERT INTO cards (name, image_url, attack, defense, cost, team_type, card_type,
 ('Nest_of_Decay', '/images/cards/infected/Nest_of_Decay.png', 0, 0, 0, 'infected', 'energy_farmer', 'Effect: Generates +1 Energy per turn.', 1),
 
 -- Leaders (3 types, 1 each)
-('infected_leader_1', 'infected_leader_1.png', 0, 0, 0, 'infected', 'leader', 'Brood Mother - Spawns extra creatures', 1),
-('infected_leader_2', 'infected_leader_2.png', 0, 0, 0, 'infected', 'leader', 'Plague Lord - Spreads infection', 1),
-('infected_leader_3', 'infected_leader_3.png', 0, 0, 0, 'infected', 'leader', 'Hive Mind - Controls enemy creatures', 1),
+('infected_leader_1', 'infected_leader_1.png', 3, 2, 1, 'infected', 'leader', 'Brood Mother - Spawns extra creatures', 1),
+('infected_leader_2', 'infected_leader_2.png', 3, 5, 5, 'infected', 'leader', 'Plague Lord - Spreads infection', 1),
+('infected_leader_3', 'infected_leader_3.png', 4, 3, 7, 'infected', 'leader', 'Hive Mind - Controls enemy creatures', 1),
 
 -- Creatures (5 types, 10 each)
 ('Gnawling', '/images/cards/infected/Gnawling.png', 1, 1, 1, 'infected', 'creature', 'Minions that would die for the Queen.', 10),

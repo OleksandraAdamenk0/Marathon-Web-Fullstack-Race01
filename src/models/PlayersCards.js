@@ -5,58 +5,65 @@ class PlayersCardsModel extends Model {
         super('players_cards');
     }
 
-    async addCard(playerId, roomId, cardId, zone, position = null, isActive = false) {
-        const sql = `INSERT INTO players_cards (player_id, room_id, card_id, zone, position, is_active) VALUES (?, ?, ?, ?, ?, ?)`;
-        return this.query(sql, [playerId, roomId, cardId, zone, position, isActive]);
+    async addCard(playerId, roomId, cardId, zone, position = null, isActive = false, instanceNumber = 1) {
+        const sql = `INSERT INTO players_cards (player_id, room_id, card_id, zone, position, is_active, instance_number) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        return this.query(sql, [playerId, roomId, cardId, zone, position, isActive, instanceNumber]);
     }
 
-    async addCardDeck(playerId, roomId, cardId, position = null) {
-        return this.addCard(playerId, roomId, cardId, 'deck', position);
+    async addCardDeck(playerId, roomId, cardId, position = null, instanceNumber = 1) {
+        return this.addCard(playerId, roomId, cardId, 'deck', position, false, instanceNumber);
     }
 
-    async addCardLeader(playerId, roomId, cardId) {
-        return this.addCard(playerId, roomId, cardId, 'leader');
+    async addCardLeader(playerId, roomId, cardId, instanceNumber = 1) {
+        return this.addCard(playerId, roomId, cardId, 'leader', null, false, instanceNumber);
     }
 
-    async moveCard(playerId, roomId, cardId, newZone, position = null) {
-        const sql = `UPDATE players_cards SET zone = ?, position = ? WHERE player_id = ? AND room_id = ? AND card_id = ?`;
-        return this.query(sql, [newZone, position, playerId, roomId, cardId]);
+    async moveCard(playerId, roomId, cardId, instanceNumber, newZone, position = null) {
+        const sql = `UPDATE players_cards SET zone = ?, position = ? WHERE player_id = ? AND room_id = ? AND card_id = ? AND instance_number = ?`;
+        return this.query(sql, [newZone, position, playerId, roomId, cardId, instanceNumber]);
     }
 
-    async moveFromDeckToHand(playerId, roomId, cardId, position = null) {
-        return this.moveCard(playerId, roomId, cardId, 'hand', position);
+    async moveFromDeckToHand(playerId, roomId, cardId, instanceNumber, position = null) {
+        return this.moveCard(playerId, roomId, cardId, instanceNumber, 'hand', position);
     }
 
-    async moveFromHandToBoard(playerId, roomId, cardId, position = null) {
-        return this.moveCard(playerId, roomId, cardId, 'board', position);
+    async moveFromHandToBoard(playerId, roomId, cardId, instanceNumber, position = null) {
+        return this.moveCard(playerId, roomId, cardId, instanceNumber, 'board', position);
     }
 
-    async moveFromHandToFarm(playerId, roomId, cardId) {
-        return this.moveCard(playerId, roomId, cardId, 'farm');
+    async moveFromHandToFarm(playerId, roomId, cardId, instanceNumber) {
+        return this.moveCard(playerId, roomId, cardId, instanceNumber, 'farm');
     }
 
-    async moveFromHandToLeader(playerId, roomId, cardId) {
-        return this.moveCard(playerId, roomId, cardId, 'leader');
+    async moveFromHandToLeader(playerId, roomId, cardId, instanceNumber) {
+        return this.moveCard(playerId, roomId, cardId, instanceNumber, 'leader');
     }
 
-    async moveFromHandToDiscard(playerId, roomId, cardId) {
-        return this.moveCard(playerId, roomId, cardId, 'discard');
+    async moveFromHandToDiscard(playerId, roomId, cardId, instanceNumber) {
+        return this.moveCard(playerId, roomId, cardId, instanceNumber, 'discard');
     }
 
-    async moveFromDeckToDiscard(playerId, roomId, cardId) {
-        return this.moveCard(playerId, roomId, cardId, 'discard');
+    async moveFromDeckToDiscard(playerId, roomId, cardId, instanceNumber) {
+        return this.moveCard(playerId, roomId, cardId, instanceNumber, 'discard');
     }
 
     async getAllPlayerCards(playerId, roomId) {
-        const sql = `SELECT * FROM players_cards WHERE player_id = ? AND room_id = ?`;
+        const sql = `SELECT * FROM players_cards WHERE player_id = ? AND room_id = ? ORDER BY card_id, instance_number`;
         return this.query(sql, [playerId, roomId]);
     }
 
-    async getSpecific(playerId, roomId, cardId, zone) {
-        const [res] = await this.query(
-            `SELECT * FROM players_cards WHERE player_id = ? AND room_id = ? AND card_id = ? AND zone = ?`,
-            [playerId, roomId, cardId, zone]
-        );
+    async getSpecific(playerId, roomId, cardId, zone, instanceNumber = null) {
+        let sql = `SELECT * FROM players_cards WHERE player_id = ? AND room_id = ? AND card_id = ? AND zone = ?`;
+        let params = [playerId, roomId, cardId, zone];
+
+        if (instanceNumber !== null) {
+            sql += ` AND instance_number = ?`;
+            params.push(instanceNumber);
+        }
+
+        sql += ` ORDER BY instance_number ASC LIMIT 1`;
+
+        const [res] = await this.query(sql, params);
         return res;
     }
 
@@ -66,7 +73,7 @@ class PlayersCardsModel extends Model {
              FROM players_cards pc
              JOIN cards c ON pc.card_id = c.id
              WHERE pc.player_id = ? AND pc.room_id = ? AND pc.zone = 'hand'
-             ORDER BY pc.position ASC`,
+             ORDER BY pc.position ASC, pc.card_id ASC, pc.instance_number ASC`,
             [playerId, roomId]
         );
     }
@@ -78,7 +85,7 @@ class PlayersCardsModel extends Model {
              JOIN cards c ON pc.card_id = c.id
              JOIN players p ON pc.player_id = p.id
              WHERE pc.room_id = ? AND pc.zone IN ('board', 'farm', 'leader')
-             ORDER BY pc.position ASC`,
+             ORDER BY pc.position ASC, pc.card_id ASC, pc.instance_number ASC`,
             [roomId]
         );
     }
@@ -88,6 +95,16 @@ class PlayersCardsModel extends Model {
             `DELETE FROM players_cards WHERE room_id = ?`,
             [roomId]
         );
+    }
+
+    async getNextInstanceNumber(playerId, roomId, cardId) {
+        const result = await this.query(
+            `SELECT MAX(instance_number) as max_instance FROM players_cards 
+             WHERE player_id = ? AND room_id = ? AND card_id = ?`,
+            [playerId, roomId, cardId]
+        );
+
+        return (result[0]?.max_instance || 0) + 1;
     }
 }
 
