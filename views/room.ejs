@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +15,9 @@
       <script src="/socket.io/socket.io.js"></script>
       <script src="/js/socket.js"></script> <!-- Sets window.socket -->
       <script src="/js/gameSocket.js"></script> <!-- Uses window.socket -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
 </head>
 <body>
 
@@ -47,11 +51,11 @@
 <!--                of the player login (shor the rest on hover)-->
             </div>
 
-            <div class="enemy-hand-card"><img src="card-enemy-back.png" alt="card" class="card" id="enemy-card1"></div>
-            <div class="enemy-hand-card"><img src="card-enemy-back.png" alt="card" class="card" id="enemy-card2"></div>
-            <div class="enemy-hand-card"><img src="card-enemy-back.png" alt="card" class="card" id="enemy-card3"></div>
-            <div class="enemy-hand-card"><img src="card-enemy-back.png" alt="card" class="card" id="enemy-card4"></div>
-            <div class="enemy-hand-card"><img src="card-enemy-back.png" alt="card" class="card" id="enemy-card5"></div>
+            <div class="enemy-hand-card"></div>
+            <div class="enemy-hand-card"></div>
+            <div class="enemy-hand-card"></div>
+            <div class="enemy-hand-card"></div>
+            <div class="enemy-hand-card"></div>
 
         </div>
 
@@ -67,26 +71,26 @@
             </div>
 
             <div class="farmers">
-                <div class="player-farmer"><img src="viper-card.png" alt="viper card" class="card player-farmer-card" id="player-farmer1" title="first example of cool nice and easy way to show anything about the card"></div>
-                <div class="player-farmer"><img src="viper-card.png" alt="viper card" class="card player-farmer-card" id="player-farmer2" title="second example of cool nice and easy way to show anything about the card"></div>
-                <div class="player-farmer"><img src="viper-card.png" alt="viper card" class="card player-farmer-card" id="player-farmer3" title="third example of cool nice and easy way to show anything about the card"></div>
+                <div class="player-farmer"></div>
+                <div class="player-farmer"></div>
+                <div class="player-farmer"></div>
             </div>
 
-            <div class="enemy-troop troop" id="enemy-troop1"><img src="viper-card.png" alt="viper card" class="card enemy-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
-            <div class="enemy-troop troop" id="enemy-troop2"><img src="viper-card.png" alt="viper card" class="card enemy-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
-            <div class="enemy-troop troop" id="enemy-troop3"><img src="viper-card.png" alt="viper card" class="card enemy-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
-            <div class="enemy-troop troop" id="enemy-troop4"><img src="viper-card.png" alt="viper card" class="card enemy-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
-            <div class="enemy-troop troop" id="enemy-troop5"><img src="viper-card.png" alt="viper card" class="card enemy-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+            <div class="enemy-troop troop" id="enemy-troop1"></div>
+            <div class="enemy-troop troop" id="enemy-troop2"></div>
+            <div class="enemy-troop troop" id="enemy-troop3"></div>
+            <div class="enemy-troop troop" id="enemy-troop4"></div>
+            <div class="enemy-troop troop" id="enemy-troop5"></div>
 
-            <div class="player-troop troop" id="player-troop1"><img src="viper-card.png" alt="viper card" class="card player-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
-            <div class="player-troop troop" id="player-troop2"><img src="viper-card.png" alt="viper card" class="card player-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
-            <div class="player-troop troop" id="player-troop3"><img src="viper-card.png" alt="viper card" class="card player-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
-            <div class="player-troop troop" id="player-troop4"><img src="viper-card.png" alt="viper card" class="card player-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
-            <div class="player-troop troop" id="player-troop5"><img src="viper-card.png" alt="viper card" class="card player-troop-card" title="example of cool nice and easy way to show anything about the card"></div>
+            <div class="player-troop troop" id="player-troop1"></div>
+            <div class="player-troop troop" id="player-troop2"></div>
+            <div class="player-troop troop" id="player-troop3"></div>
+            <div class="player-troop troop" id="player-troop4"></div>
+            <div class="player-troop troop" id="player-troop5"></div>
 
 
             <div class="leader">
-                <div class="player-leader"><img src="viper-card.png" alt="viper card" class="card player-leader-card" id="player-leader" title="first example of cool nice and easy way to show anything about the card"></div>
+                <div class="player-leader"></div>
             </div>
 
         </div>
@@ -107,11 +111,6 @@
             <img src="card-full-back.png" alt="deck" class="deck">
         </div>
         <div class="graveyard-deck">
-            <img src="card-full-back.png" alt="graveyard" class="graveyard">
-            <img src="card-full-back.png" alt="graveyard" class="graveyard">
-            <img src="card-full-back.png" alt="graveyard" class="graveyard">
-            <img src="card-full-back.png" alt="graveyard" class="graveyard">
-            <img src="card-full-back.png" alt="graveyard" class="graveyard">
         </div>
     </div>
 

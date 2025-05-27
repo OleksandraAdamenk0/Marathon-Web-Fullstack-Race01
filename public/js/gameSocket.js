@@ -41,7 +41,7 @@ socket.on('game-already-started', (data) => {
 
 socket.on('deck-built', ({ hand, deckStats, teamType }) => {
     console.log('[Deck Built]', hand, deckStats, teamType);
-    renderPlayerHand(hand);
+    renderPlayerHand(hand, teamType);
     renderEnemyHand(5, teamType === 'infected' ? 'survivors' : 'infected');
     renderDeckBackside(teamType);
 });
@@ -77,65 +77,121 @@ socket.on('room-update', async ({ roomId }) => {
     }
   });
 
-function renderPlayerHand(hand) {
+  function renderPlayerHand(hand, teamType) {
     const playerRow = document.querySelector('.player-row');
     if (!playerRow) return console.warn('[Render] No .player-row element found');
-
-    if (!Array.isArray(hand)) {
-        console.error('[Render] Expected hand to be an array, got:', hand);
-        return;
-    }
-
+    if (!Array.isArray(hand)) return console.error('[Render] Expected hand to be an array');
+  
     const placeholder = playerRow.querySelector('.placeholder');
     playerRow.innerHTML = '';
     if (placeholder) playerRow.appendChild(placeholder);
-
-    console.log('[Debug] Rendering hand:', hand);
-
+  
     hand.forEach((card, index) => {
-        const cardContainer = document.createElement('div');
-        cardContainer.className = 'player-hand';
+      const handSlot = document.createElement('div');
+      handSlot.className = 'player-hand';
+      playerRow.appendChild(handSlot);
+      const backImage = teamType === 'infected'
+  ? '/images/cards/backsides/infects.png'
+  : '/images/cards/backsides/people.png';
 
-        const cardImg = document.createElement('img');
-        if (!card.image_url) {
-          console.warn('[Render] Card is missing image_url:', card);
-          return;
-        }
-        
-        const imagePath = card.image_url.startsWith('/')
-            ? card.image_url
-            : `/images/cards/${card.team_type}/${card.image_url}`;
+    
 
-
-        cardImg.src = imagePath;
-        cardImg.alt = card.name;
-        cardImg.className = 'card player-hand-card';
-        cardImg.id = `player-card${index + 1}`;
-        cardImg.title = card.description;
-
-        cardImg.draggable = true;
-        cardImg.dataset.cardId = card.cardId;
-        cardImg.dataset.instanceNumber = card.instanceNumber;
-        cardImg.dataset.playerCardId = card.id;
-        cardImg.dataset.zone = card.zone;
-
-        cardImg.addEventListener('dragstart', (e) => {
-            console.log(`[Drag] Started dragging card ${card.name} (${card.cardId})`);
-            e.dataTransfer.setData('text/plain', JSON.stringify({
-                cardId: card.cardId
-            }));
-        });
-
-        cardImg.onerror = () => {
-            console.warn(`[Missing Image] ${cardImg.src}`);
-            cardImg.src = '/images/cards/default-card.png';
-        };
-
-        cardContainer.appendChild(cardImg);
-        playerRow.appendChild(cardContainer);
+const placeholderImg = document.createElement('img');
+placeholderImg.className = 'card player-hand-card';
+placeholderImg.src = backImage;
+placeholderImg.alt = 'card back';
+placeholderImg.style.visibility = 'hidden'; // hide it but it sets the size
+handSlot.appendChild(placeholderImg);
+      animateCardToHand(card, index, handSlot, teamType);
     });
-}
+  }
+  
+  function animateCardToHand(card, index, handSlot, teamType) {
+    const deck = document.querySelector('.active-deck img');
+    if (!deck || !handSlot || !card.image_url) return;
+  
+    const cardElem = document.createElement('img');
+    cardElem.className = 'card player-hand-card';
+    const backImage = teamType === 'infected'
+  ? '/images/cards/backsides/infects.png'
+  : '/images/cards/backsides/people.png';
 
+
+cardElem.src = backImage;
+
+    cardElem.style.position = 'absolute';
+    cardElem.style.left = '0px'; // <--- Important
+    cardElem.style.top = '0px';  // <--- Important
+    cardElem.style.width = getComputedStyle(handSlot).width;
+    cardElem.style.height = getComputedStyle(handSlot).height;
+
+    cardElem.style.zIndex = 1000;
+  
+    document.body.appendChild(cardElem);
+  
+    const deckRect = deck.getBoundingClientRect();
+    const handRect = handSlot.getBoundingClientRect();
+    const deltaX = handRect.left - deckRect.left;
+    const deltaY = handRect.top - deckRect.top;
+  
+    gsap.set(cardElem, {
+      x: deckRect.left + window.scrollX,
+      y: deckRect.top + window.scrollY
+    });
+  
+    const frontUrl = card.image_url.startsWith('/')
+      ? card.image_url
+      : `/images/cards/${teamType}/${card.image_url}`;
+  
+    const tl = gsap.timeline({
+      onComplete: () => {
+        cardElem.remove();
+        handSlot.innerHTML = '';
+      
+        const finalCard = document.createElement('img');
+        finalCard.src = frontUrl;
+        finalCard.className = 'card player-hand-card';
+        finalCard.alt = card.name;
+        finalCard.title = card.description;
+        finalCard.draggable = true;
+        finalCard.dataset.cardId = card.cardId;
+        finalCard.dataset.instanceNumber = card.instanceNumber;
+        finalCard.dataset.playerCardId = card.id;
+        finalCard.dataset.zone = card.zone;
+      
+        finalCard.onerror = () => {
+          console.warn(`[Missing Image] ${frontUrl}`);
+          finalCard.src = '/images/cards/default-card.png';
+        };
+      
+        handSlot.appendChild(finalCard);
+      }
+      
+    });
+  
+    tl.to(cardElem, {
+      duration: 0.8,
+      x: `+=${deltaX}`,
+      y: `+=${deltaY}`,
+      ease: 'power2.out'
+    })
+    .to(cardElem, {
+      duration: 0.3,
+      scaleX: 0,
+      ease: 'power1.inOut'
+    }, teamType === 'infected' ? '+=0.05' : '+=0.1')
+    .set(cardElem, {
+      scaleX: 0,
+      src: frontUrl
+    })
+    .to(cardElem, {
+      duration: 0.3,
+      scaleX: 1,
+      ease: 'power1.inOut'
+    });
+  }
+  
+  
 
 function renderEnemyHand(cardCount = 5, teamType = 'survivors') {
     const enemyRow = document.querySelector('.enemy-row');
@@ -227,10 +283,12 @@ function renderPlayerBoard(boardState) {
   
       if (data.hand && data.boardState) {
         console.log('[Client] Reloaded hand and board from server');
-        renderPlayerHand(data.hand);
-        renderPlayerBoard(data.boardState);
+        
+
         const teamType = window.PLAYER_TEAM_TYPE || 'survivors';
 const opponentTeam = teamType === 'infected' ? 'survivors' : 'infected';
+renderPlayerHand(data.hand, teamType);
+renderPlayerBoard(data.boardState);
 renderEnemyHand(5, opponentTeam);
 renderDeckBackside(teamType);
 
@@ -278,7 +336,7 @@ renderDeckBackside(teamType);
     // Server responses
     window.socket.on('hand-update', ({ hand }) => {
       console.log('[Client] Hand updated');
-      renderPlayerHand(hand); // Make sure this is imported
+      renderPlayerHand(hand, teamType); // Make sure this is imported
     });
   
     window.socket.on('board-update', ({ board }) => {

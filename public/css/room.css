@@ -46,6 +46,7 @@ body {
     height: 100%;
 }
 
+
 /*---------------------------------*/
 
 .container {
@@ -131,6 +132,10 @@ body {
     height: 100%;
 }
 
+.container, .game-field {
+    overflow: visible !important;
+    position: relative; /* Make sure these aren't cutting off the animation */
+  }
 .leader {
     grid-column: 7;
     grid-row: 5 / span 2;
@@ -138,6 +143,9 @@ body {
     height: 100%;
 }
 
+.card {
+    pointer-events: none; /* While animating, to prevent interactions */
+  }
 #enemy-troop1 {
     grid-column: 2;
     grid-row: 1 / span 2;
@@ -204,8 +212,10 @@ body {
 .card {
     width: 100%;
     height: auto;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
 }
-
+  
 .player-hand {
     height: calc((100vh - 20px) / 100 * 24.5);
 }
@@ -341,4 +351,3 @@ body {
     transform: translate(-50%, -50%) rotate(-20deg);
     left: 126%;
 }
-
