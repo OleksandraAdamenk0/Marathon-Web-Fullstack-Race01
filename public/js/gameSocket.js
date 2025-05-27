@@ -159,12 +159,45 @@ cardElem.src = backImage;
         finalCard.dataset.playerCardId = card.id;
         finalCard.dataset.zone = card.zone;
       
+
+
         finalCard.onerror = () => {
           console.warn(`[Missing Image] ${frontUrl}`);
           finalCard.src = '/images/cards/default-card.png';
         };
       
-        handSlot.appendChild(finalCard);
+        const cardWrapper = document.createElement('div');
+cardWrapper.className = 'card-wrapper';
+cardWrapper.appendChild(finalCard);
+
+// Cost (top-left)
+const costText = document.createElement('div');
+costText.className = 'card-cost';
+costText.textContent = card.cost;
+cardWrapper.appendChild(costText);
+
+// Attack (top-right)
+const attackText = document.createElement('div');
+attackText.className = 'card-attack';
+attackText.textContent = card.attack;
+cardWrapper.appendChild(attackText);
+
+// Defense (below attack)
+const defenseText = document.createElement('div');
+defenseText.className = 'card-defense';
+defenseText.textContent = card.defense;
+cardWrapper.appendChild(defenseText);
+
+handSlot.appendChild(cardWrapper);
+
+const icon = document.createElement('img');
+icon.src = `/images/cards/icons.png`; 
+icon.alt = 'card icon';
+icon.className = 'card-icon-overlay';
+
+cardWrapper.appendChild(icon); // ⬅️ put icon inside the wrapper
+handSlot.appendChild(cardWrapper); // then append the whole thing
+
       }
       
     });
