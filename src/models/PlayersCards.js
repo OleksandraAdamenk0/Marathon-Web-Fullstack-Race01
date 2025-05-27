@@ -89,6 +89,7 @@ class PlayersCardsModel extends Model {
             [roomId]
         );
     }
+    
 
     async deleteAllByRoom(roomId) {
         return await this.query(

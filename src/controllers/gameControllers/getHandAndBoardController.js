@@ -14,10 +14,12 @@ module.exports = async (req, res) => {
         const user = await userModel.getById(userId);
         if (!user) return res.status(400).json({error: 'User not found'});
 
-        const roomId = req.params.room_id;
-        const room = await roomModel.getById(roomId);
-        if (!room) return res.status(400).json({error: 'Room not found'});
+        const roomId = req.query.room_id;
+        if (!roomId) return res.status(400).json({ error: 'Missing room_id' });
 
+        const room = await roomModel.getById(roomId);
+        if (!room) return res.status(400).json({ error: 'Room not found' });
+        
         const player = await playerModel.getPlayerByUserAndRoom(userId, roomId);
         if (!player) return res.status(400).json({error: 'Player not found'});
 

@@ -1,5 +1,3 @@
-import socket from './socket.js';
-
 socket.on('connect', () => {
   const userId = window.USER_ID;
 

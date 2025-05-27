@@ -15,7 +15,7 @@ router.post('/public/create', authenticateAccessToken, createPublicRoomControlle
 router.post('/private/create', authenticateAccessToken,createPrivateRoomController);
 
 router.post('/join-random', authenticateAccessToken, joinRandomRoomController);
-router.get('/join/:roomId', authenticateAccessToken, joinRoomController);
+router.post('/join/:roomId', authenticateAccessToken, joinRoomController);
 router.get('/public/available', authenticateAccessToken, getAvailablePublicRoomsController);
 router.get('/:roomId', authenticateAccessToken, getRoomByIdController);
 

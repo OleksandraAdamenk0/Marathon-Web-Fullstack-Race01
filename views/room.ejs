@@ -11,9 +11,9 @@
         window.USERNAME = "<%= player.username %>";
       </script>
       
-    <script src="/socket.io/socket.io.js"></script>
-    <script type="module" src="/js/gameSocket.js"></script>
-    <script type="module" src="/js/reload.js"></script>
+      <script src="/socket.io/socket.io.js"></script>
+      <script src="/js/socket.js"></script> <!-- Sets window.socket -->
+      <script src="/js/gameSocket.js"></script> <!-- Uses window.socket -->
 </head>
 <body>
 
@@ -93,11 +93,11 @@
 
         <div class="player-row">
             <div class="placeholder"></div>
-            <div class="player-hand"><img src="viper-card.png" alt="viper card" class="card player-hand-card" id="player-card1" title="cool nice and easy way to show the description of the card"></div>
-            <div class="player-hand"><img src="viper-card.png" alt="viper card" class="card player-hand-card" id="player-card2" title="cool nice and easy way to show the description of the card"></div>
-            <div class="player-hand"><img src="viper-card.png" alt="viper card" class="card player-hand-card" id="player-card3" title="cool nice and easy way to show the description of the card"></div>
-            <div class="player-hand"><img src="viper-card.png" alt="viper card" class="card player-hand-card" id="player-card4" title="cool nice and easy way to show the description of the card"></div>
-            <div class="player-hand"><img src="viper-card.png" alt="viper card" class="card player-hand-card" id="player-card5" title="cool nice and easy way to show the description of the card"></div>
+            <div class="player-hand"></div>
+            <div class="player-hand"></div>
+            <div class="player-hand"></div>
+            <div class="player-hand"></div>
+            <div class="player-hand"></div>
 
         </div>
     </div>

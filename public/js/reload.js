@@ -1,5 +1,3 @@
-import socket from './socket.js';
-
 document.addEventListener('DOMContentLoaded', () => {
   const reloadBtn = document.getElementById('reload-rooms-btn');
   const overlay = document.getElementById('room-loading-overlay');
@@ -9,11 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.style.display = 'flex';
 
     try {
-      const response = await fetch('/api/room/public/available', {
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
-        }
-      });
+      const response = await fetch('/api/room/public/available');
 
       const data = await response.json();
       const rooms = data.rooms || data.roomsData || [];
