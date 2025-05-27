@@ -21,7 +21,7 @@ const createUsersTableSQL = `
         username VARCHAR(50) NOT NULL UNIQUE,
         email VARCHAR(100) NOT NULL UNIQUE,
         password_hash VARCHAR(255) NOT NULL,
-        avatar_url VARCHAR(255) DEFAULT '/avatar.png',
+        avatar_url VARCHAR(255) DEFAULT 'uploads/avatars/default.png',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         status ENUM('user', 'admin') DEFAULT 'user',
         emailStatus TINYINT(1) DEFAULT 0

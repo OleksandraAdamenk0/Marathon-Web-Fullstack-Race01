@@ -22,8 +22,9 @@
 <body>
 
 <div class="user-info player-info">
-    <img src="/<%= player.avatar_url %>" alt="avatar" class="avatar" title="Health: 100">
-    
+    <a href="/profile/<%= player.id %>" target="_blank">
+        <img src="/<%= player.avatar_url %>" alt="avatar" class="avatar" title="Health: 100">
+    </a>
     <div class="player-name" title="<%= player.username %>">
     <%= player.username.slice(0, 14) %><%= player.username.length > 14 ? '...' : '' %>
     </div>
@@ -40,7 +41,9 @@
 
             <div class="user-info enemy-info">
                 <% if (opponent) { %>
-                    <img src="/<%= opponent.avatar_url %>" alt="avatar" class="avatar" title="Health: <%= opponent.health || 100 %>">
+                    <a href="/profile/<%= opponent.id %>" target="_blank">
+                        <img src="/<%= opponent.avatar_url %>" alt="avatar" class="avatar" title="Health: <%= opponent.health || 100 %>">
+                    </a>                      
                     <div class="player-name" title="<%= opponent.username %>">
                       <%= opponent.username.slice(0, 14) %><%= opponent.username.length > 14 ? '...' : '' %>
                     </div>
