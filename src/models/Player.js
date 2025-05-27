@@ -27,7 +27,12 @@ class Player extends Model {
             [roomId]
         );
     }
-    
+    async getPlayersByUserId(userId) {
+        return this.query(
+            `SELECT * FROM players WHERE user_id = ?;`,
+            [userId]
+        );
+    }
     async getPlayerByRole(roomId, role) {
 	    const result = await this.query(
 		`SELECT * FROM players WHERE room_id = ? AND role = ? LIMIT 1;`,
