@@ -21,7 +21,7 @@ const createUsersTableSQL = `
         username VARCHAR(50) NOT NULL UNIQUE,
         email VARCHAR(100) NOT NULL UNIQUE,
         password_hash VARCHAR(255) NOT NULL,
-        avatar_url VARCHAR(255) DEFAULT '/avatar.png',
+        avatar_url VARCHAR(255) DEFAULT 'uploads/avatars/default.png',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         status ENUM('user', 'admin') DEFAULT 'user',
         emailStatus TINYINT(1) DEFAULT 0
@@ -37,6 +37,7 @@ const createRoomsTableSQL = `
         code VARCHAR(10) UNIQUE DEFAULT NULL,
         status ENUM('waiting', 'in-progress', 'finished') DEFAULT 'waiting',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        turn_number INT DEFAULT 0,
         current_turn_player_id INT DEFAULT NULL,
         FOREIGN KEY (player_one_id) REFERENCES users(id),
         FOREIGN KEY (player_two_id) REFERENCES users(id)
@@ -78,6 +79,7 @@ const createBattleLogsTableSQL = `
         room_id INT NOT NULL,
         user_id INT NOT NULL,
         action VARCHAR(255) NOT NULL,
+        turn_number INT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (room_id) REFERENCES rooms(id),
         FOREIGN KEY (user_id) REFERENCES users(id)
@@ -90,11 +92,12 @@ const createPlayersCardsTableSQL = `
         player_id INT NOT NULL,
         card_id INT NOT NULL,
         room_id INT NOT NULL,
-        zone ENUM('deck', 'hand', 'board', 'farm', 'leader', 'discard') NOT NULL,
+        zone ENUM('deck','hand','board','farm','leader','discard') NOT NULL,
         position INT DEFAULT NULL,
         is_active BOOLEAN DEFAULT FALSE,
         instance_number INT NOT NULL DEFAULT 1,
-        UNIQUE KEY unique_card_instance (player_id, room_id, card_id, instance_number),
+        current_defense INT NOT NULL DEFAULT 0,
+        UNIQUE KEY unique_card_instance (player_id,room_id,card_id,instance_number),
         FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
         FOREIGN KEY (card_id) REFERENCES cards(id) ON DELETE CASCADE
     );

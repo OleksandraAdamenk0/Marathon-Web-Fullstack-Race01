@@ -10,9 +10,9 @@
     <script>
       window.USER_ID = "<%= user.id %>";
     </script>
-    <script type="module" src="/js/socket.js"></script>
-    <script type="module" src="/js/sessionSocket.js"></script>
-    <script type="module" src="/js/reload.js"></script>
+    <script src="/js/socket.js"></script>
+    <script src="/js/sessionSocket.js"></script>
+    <script src="/js/reload.js"></script>
 </head>
 <body>
   <div class="main-bg">
@@ -33,12 +33,12 @@
           <img class="human" src="/images/menu_human.png" alt="Human">
         
           <div class="menu-wrapper">
-              <!--<div class="quick-join-wrapper">
+              <div class="quick-join-wrapper">
                   <label class="quick-join-label">Want to quick join?</label>
-                  <form action="/room/random" method="POST">
+                  <form action="/api/room/join-random" method="POST">
                       <button id="quick-join-btn" type="submit">Join the Game</button>
                   </form>
-              </div>-->
+              </div>
 
               <div class="room-list-container">
               <div class="room-list">

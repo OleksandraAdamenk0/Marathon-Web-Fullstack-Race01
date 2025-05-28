@@ -16,6 +16,7 @@ app.use("/", require('./routes/router'));
 app.get('/favicon.ico', (req, res) => res.redirect('/images/favicon.ico'));
 
 app.use("/api/images", express.static("public/images"));
+
 app.use(express.static('public'));
 
 module.exports = app;

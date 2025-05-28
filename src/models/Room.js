@@ -36,7 +36,21 @@ class Room extends Model {
 		SELECT * FROM rooms 
 		WHERE code IS NULL 
 		AND status = 'waiting'
+        AND player_two_id IS NULL
     `	);
+    }
+
+    async getNextAvailableRoom() {
+        console.log('[RoomModel] Finding next available room...');
+
+        const [rooms] = await this.query(
+            `SELECT * FROM ${this.table} 
+         WHERE status = 'waiting' 
+         AND player_two_id IS NULL 
+         AND code IS NULL 
+         LIMIT 1;`
+        );
+        return rooms || null;
     }
 
     async setFirstPlayer(roomId, userId) {
@@ -59,12 +73,24 @@ class Room extends Model {
         return await this.query("UPDATE rooms SET status = 'finished' WHERE id = ?", [id]);
     }
 
-    async getTurn(roomId) {
+    async getTurnPlayer(roomId) {
         const result = await this.query("SELECT current_turn_player_id FROM rooms WHERE id = ?", [roomId]);
         return result[0] || null;
     }
 
-    async setCurrentTurn(roomId, playerId) {
+    async getTurnNumber(roomId) {
+        const result = await this.query("SELECT turn_number FROM rooms WHERE id = ?", [roomId]);
+        return result[0] || null;
+    }
+
+    async incrementTurn(roomId) {
+        return this.query(
+            "UPDATE rooms SET turn_number = turn_number + 1 WHERE id = ?",
+            [roomId]
+        );
+    }
+
+    async setTurnPlayer(roomId, playerId) {
         return this.query(
             "UPDATE rooms SET current_turn_player_id = ? WHERE id = ?",
             [playerId, roomId]

@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
         }
 
         if (userId === joinedRoom.player_one_id || userId === joinedRoom.player_two_id) {
-            return res.status(400).json({error: 'You are already in this room'});
+            return res.redirect(`/room/${roomId}`);
         }
 
         const setSecondPlayerResult = await roomModel.setSecondPlayer(joinedRoom.id, userId);

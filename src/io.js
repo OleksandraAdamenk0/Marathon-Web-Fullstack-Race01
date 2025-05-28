@@ -1,8 +1,8 @@
 // set up socket.io
-const http = require('http');
-const { Server } = require('socket.io');
+const http  = require('node:http');
+const socket = require("socket.io");
 const app = require('./app');
-const registerHandlers = require('./socket/registerHandlers');
+const registerHandlers = require('./socket-handlers/socketIndex');
 
 const server = http.createServer(app);
 

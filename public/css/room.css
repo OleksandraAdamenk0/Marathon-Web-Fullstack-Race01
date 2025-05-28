@@ -4,10 +4,25 @@
     box-sizing: border-box;
 }
 
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3); /* adjust opacity for darkness */
+  z-index: -1;
+}
+
+
 body {
     height: 100vh;
     width: 100vw;
     overflow: hidden;
+
+    background: url('/images/roombg.png') no-repeat center center;
+    background-size: cover;
 }
 
 /*players*/
@@ -45,6 +60,7 @@ body {
 .enemy-info {
     height: 100%;
 }
+
 
 /*---------------------------------*/
 
@@ -123,6 +139,10 @@ body {
     height: 100%;
 }
 
+.container, .game-field {
+    overflow: visible !important;
+    position: relative;
+  }
 .leader {
     grid-column: 7;
     grid-row: 5 / span 2;
@@ -130,6 +150,7 @@ body {
     height: 100%;
 }
 
+  
 #enemy-troop1 {
     grid-column: 2;
     grid-row: 1 / span 2;
@@ -187,19 +208,11 @@ body {
 }
 
 /*elements*/
-
-.placeholder {
-    width: 1px;
-    height: 1px;
-}
-
-.card {
-    width: 100%;
-    height: auto;
-}
-
+  
 .player-hand {
-    height: calc((100vh - 20px) / 100 * 24.5);
+    position: relative;
+    overflow: visible;
+
 }
 
 .player-hand-card {
@@ -334,3 +347,62 @@ body {
     left: 126%;
 }
 
+/*card wrapper*/
+
+.placeholder {
+    width: 1px;
+    height: 1px;
+}
+
+
+.card-icon-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    z-index: 10;
+    pointer-events: none;
+}
+  
+.card {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+  
+.card-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+  
+  
+.card-cost, .card-attack, .card-defense {
+    position: absolute;
+    color: #fff;
+    font-size: 2em;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+    z-index: 11;
+    pointer-events: none;
+}
+  
+  
+.card-cost {
+    top: 3%;
+    left: 7%;
+}
+  
+.card-attack {
+    top: 3%;
+    right: 6%;
+}
+  
+.card-defense {
+    top: 24%;
+    right: 6%;
+}

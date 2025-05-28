@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
 
     const room = await Room.getById(roomId);
     if (!room) return res.status(404).send('Room not found');
-    if (room.status !== 'waiting' && room.status !== 'in_progress') return res.status(400).send('Room is not available');
+    if (room.status !== 'waiting' && room.status !== 'in-progress') return res.status(400).send('Room is not available');
     let format = 'public';
     if (room.code !== null) format = 'private';
 

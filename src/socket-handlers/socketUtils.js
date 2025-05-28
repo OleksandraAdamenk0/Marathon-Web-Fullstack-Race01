@@ -1,19 +1,24 @@
 const connectedUsers = require('../utils/connectedUsers');
 
 function sendMessageToUser(io, userId, event, data) {
+    if (typeof userId !== 'string') {
+        userId = userId.toString();
+    }
+
     const socketId = connectedUsers.getSocketId(userId);
     if (!socketId) {
-        console.warn(`[SocketUtils] No socket found for user ${userId}`);
+        console.warn(`[SocketUtils] No socket found for user ${userId}, with event ${event}`);
         return;
     }
 
     const socket = io.sockets.sockets.get(socketId);
     if (!socket) {
-        console.warn(`[SocketUtils] Socket ${socketId} not found for user ${userId}`);
+        console.warn(`[SocketUtils] Socket ${socketId} not found for user ${userId}, with event ${event}`);
         return;
     }
 
     socket.emit(event, data);
+    console.log(`[SocketUtils] 👑Sent ${event} to user ${userId}`);
 }
 
 async function sendMessageToRoom(io, roomId, event, data) {

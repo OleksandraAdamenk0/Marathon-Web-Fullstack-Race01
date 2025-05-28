@@ -30,6 +30,7 @@ console.log(`[Server] Emitted room-update for room ${roomId}`);
 
         if (await this.utilReadyToStart(roomId)) {
             this.socket.to(roomId).emit('ready-to-start', { roomId });
+            console.log(`[RoomSocket] Emitting ready-to-start for room ${roomId}`);
         }
     }
 

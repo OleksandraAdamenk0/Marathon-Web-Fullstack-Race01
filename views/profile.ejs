@@ -42,16 +42,18 @@
             </div>
         </div>
         
-        <div class="button-row">
-            <form id="avatar-form" action="/api/images/avatar" method="POST" enctype="multipart/form-data">
-                <input type="file" id="avatar-upload" name="avatar" accept="image/*" style="display: none;">
-                <button type="button" class="avatar-button" id="upload-trigger">Choose new Avatar</button>
-            </form>
-
-            <form id="avatar-reset" action="/api/images/avatar/reset" method="POST">
-                <button class="avatar-button" type="submit">Reset to Default</button>
-            </form>
-        </div>          
+        <% if (currentUser && currentUser.id === user.id) { %>
+            <div class="button-row">
+                <form id="avatar-form" action="/api/images/avatar" method="POST" enctype="multipart/form-data">
+                    <input type="file" id="avatar-upload" name="avatar" accept="image/*" style="display: none;">
+                    <button type="button" class="avatar-button" id="upload-trigger">Choose new Avatar</button>
+                </form>
+          
+                <form id="avatar-reset" action="/api/images/avatar/reset" method="POST">
+                    <button class="avatar-button" type="submit">Reset to Default</button>
+                </form>
+            </div>
+          <% } %>     
     </div>
 
 </body>

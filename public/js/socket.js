@@ -1,4 +1,6 @@
-const socket = io();
+// socket.js
+window.socket = io(); // No exports!
+
 
 // Automatically initialize session once connected
 socket.on('connect', () => {
@@ -11,4 +13,3 @@ socket.on('connect', () => {
   }
 });
 
-export default socket;

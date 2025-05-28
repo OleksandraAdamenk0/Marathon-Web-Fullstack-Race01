@@ -27,7 +27,12 @@ class Player extends Model {
             [roomId]
         );
     }
-    
+    async getPlayersByUserId(userId) {
+        return this.query(
+            `SELECT * FROM players WHERE user_id = ?;`,
+            [userId]
+        );
+    }
     async getPlayerByRole(roomId, role) {
 	    const result = await this.query(
 		`SELECT * FROM players WHERE room_id = ? AND role = ? LIMIT 1;`,
@@ -79,6 +84,14 @@ class Player extends Model {
             [energy, playerId]
         );
     }
+
+    async updateHealthByPlayerId(playerId, delta) {
+        return this.query(
+            `UPDATE players SET health = health + ? WHERE id = ?`,
+            [delta, playerId]
+        );
+    }
+
 }
 
 module.exports = Player;
