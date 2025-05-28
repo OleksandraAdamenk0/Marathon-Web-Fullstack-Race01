@@ -447,4 +447,14 @@ button:disabled {
   opacity: 0.1;
   z-index: 1;
 }
-  
+
+.menu-scene {
+  height: 100vh;
+}
+
+.room-list-container {
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
