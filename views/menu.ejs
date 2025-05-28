@@ -13,6 +13,7 @@
     <script type="module" src="/js/socket.js"></script>
     <script type="module" src="/js/sessionSocket.js"></script>
     <script type="module" src="/js/reload.js"></script>
+    <script src="/js/privateRoomHandler.js"></script>
 </head>
 <body>
   <div class="main-bg">
@@ -83,14 +84,14 @@
                               <button type="submit" name="roomType" value="public">Public</button>
                           </form>
 
-                          <form action="/api/room/private/create" method="POST">
-                              <button type="submit" name="roomType" value="private">Private</button>
-                          </form>
+                          <button id="private-room-trigger">Private</button>
                       </div>
                   </div>
             </div>
         </div>
         </div>
     </div>
+    <%- include('partials/createPassword') %>
+    <%- include('partials/joinPassword') %>
 </body>
 </html>

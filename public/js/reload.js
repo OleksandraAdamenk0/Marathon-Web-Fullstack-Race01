@@ -42,14 +42,57 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${room.status}</td>
           <td>${players} / 2</td>
           <td>
-            <form action="/api/room/join/${room.id}" method="POST">
-              <input type="hidden" name="code" value="00005">
-              <button class="join-button" type="submit" ${isFull ? 'disabled' : ''}>Join</button>
-            </form>
+            <button class="join-button" data-room-id="${room.id}" data-is-private="${room.code ? 'true' : 'false'}" ${isFull ? 'disabled' : ''}>
+              Join
+            </button>
+
           </td>
         `;
         tbody.appendChild(row);
       });
+
+      document.querySelectorAll('.join-button').forEach(button => {
+        button.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const roomId = button.dataset.roomId;
+          const isPrivate = button.dataset.isPrivate === 'true';
+      
+          if (isPrivate) {
+            const modal = document.getElementById('enter-password');
+            modal.classList.remove('hidden');
+      
+            document.getElementById('submit-password-btn').onclick = () => {
+              const password = document.getElementById('join-password').value;
+              if (!password) return alert('Please enter a password.');
+      
+              const form = document.createElement('form');
+              form.method = 'POST';
+              form.action = `/api/room/join/${roomId}`;
+      
+              const input = document.createElement('input');
+              input.type = 'hidden';
+              input.name = 'code';
+              input.value = password;
+      
+              form.appendChild(input);
+              document.body.appendChild(form);
+              form.submit();
+            };
+      
+            document.getElementById('cancel-join-btn').onclick = () => {
+              modal.classList.add('hidden');
+              document.getElementById('join-password').value = '';
+            };
+      
+          } else {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/api/room/join/${roomId}`;
+            document.body.appendChild(form);
+            form.submit();
+          }
+        });
+      });      
 
     } catch (err) {
       console.error('[Room Reload Error]', err);
