@@ -97,9 +97,9 @@ INSERT INTO cards (name, image_url, attack, defense, cost, team_type, card_type,
 ('Fusion_Beacon', '/images/cards/survivors/Fusion_Beacon.png', 0, 0, 0, 'survivors', 'energy_farmer', 'Effect: Generates +3 Energy per turn. All your units have -1 DEF while activated.', 1),
 
 -- Leaders (3 types, 1 each)
-('Operative', '/images/cards/survivors/Operative.png', 2, 4, 1, 'survivors', 'leader', 'A capable commander. Effect: Gives +1 temporary DEF for 3 turns.', 1),
-('Marshall', '/images/cards/survivors/Marshall.png', 4, 6, 6, 'survivors', 'leader', 'Defensive legend with a mech armor. Effect: All units gain +2 DEF. Has a chance of giving immunity to a random unit for 1 turn.', 1),
-('Commander', '/images/cards/survivors/Commander.png', 5, 3, 8, 'survivors', 'leader', 'A battle-hardened leader. Effect: All units gain +1 ATK. Special rally: all units gain +2 ATK for 1 turn.', 1),
+('Operative', '/images/cards/survivors/Operative.png', 2, 4, 1, 'survivors', 'leader', 'A capable commander. Effect: Gives +1 DEF to all units while attacking.', 1),
+('Marshall', '/images/cards/survivors/Marshall.png', 4, 6, 6, 'survivors', 'leader', 'Defensive legend with a mech armor. Effect: All units gain +2 DEF while defending.', 1),
+('Commander', '/images/cards/survivors/Commander.png', 5, 3, 8, 'survivors', 'leader', 'A battle-hardened leader. Effect: All units gain +1 ATK', 1),
 
 -- Creatures (5 types, 10 each)
 
@@ -115,9 +115,9 @@ INSERT INTO cards (name, image_url, attack, defense, cost, team_type, card_type,
 ('Nest_of_Decay', '/images/cards/infected/Nest_of_Decay.png', 0, 0, 0, 'infected', 'energy_farmer', 'Effect: Generates +1 Energy per turn.', 1),
 
 -- Leaders (3 types, 1 each)
-('Prime_Husk', '/images/cards/infected/Prime_Husk.png', 3, 2, 1, 'infected', 'leader', 'The beginning and the end of infects. Effect: Gives +1 temporary DEF for 3 turns.', 1),
-('Plague_Lord', '/images/cards/infected/Plague_Lord.png', 3, 5, 5, 'infected', 'leader', 'A towering brute of decay. Commands through fear and mass. Effect: All allied Infect units gain +1 DEF.', 1),
-('The_Queen', '/images/cards/infected/The_Queen.png', 4, 3, 7, 'infected', 'leader', 'Matriarch of the swarm. Effect: All allies gain +1 ATK. Spawns two Gnawlings upon entering the field.', 1),
+('Prime_Husk', '/images/cards/infected/Prime_Husk.png', 3, 2, 1, 'infected', 'leader', 'The beginning and the end of infects. Effect: Gives +1 ATK while defending', 1),
+('Plague_Lord', '/images/cards/infected/Plague_Lord.png', 3, 5, 5, 'infected', 'leader', 'A towering brute of decay. Commands through fear and mass. Effect: All units gain +2 DEF', 1),
+('The_Queen', '/images/cards/infected/The_Queen.png', 4, 3, 7, 'infected', 'leader', 'Matriarch of the swarm. Effect: All units gain +2 ATK.', 1),
 
 -- Creatures (5 types, 10 each)
 ('Gnawling', '/images/cards/infected/Gnawling.png', 1, 1, 1, 'infected', 'creature', 'Minions that would die for the Queen.', 10),

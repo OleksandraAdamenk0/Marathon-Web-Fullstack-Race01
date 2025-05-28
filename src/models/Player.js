@@ -84,6 +84,14 @@ class Player extends Model {
             [energy, playerId]
         );
     }
+
+    async updateHealthByPlayerId(playerId, delta) {
+        return this.query(
+            `UPDATE players SET health = health + ? WHERE id = ?`,
+            [delta, playerId]
+        );
+    }
+
 }
 
 module.exports = Player;

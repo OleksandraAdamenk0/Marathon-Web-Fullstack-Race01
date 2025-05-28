@@ -19,8 +19,11 @@ class GameSocketHandler {
     registerListeners() {
     console.log('[GameSocket] Registering listeners for socket', this.socket.id);
         this.socket.on('start-game', this.handleStartGame.bind(this));
+        this.socket.on('leave-game', this.handleLeaveGame.bind(this));
         this.socket.on('deal-deck', this.handleDealDeck.bind(this));
         this.socket.on('draw-card', this.handleDrawCards.bind(this));
+        this.socket.on('start-turn',  this.handleStartTurn.bind(this));
+        this.socket.on('end-turn',    this.handleEndTurn.bind(this));
         this.socket.on('play-card', this.handleTurn.bind(this));
     }
 
@@ -81,6 +84,65 @@ class GameSocketHandler {
     }
 }
 
+    async handleStartTurn({ roomId, userId }) {
+        if (!roomId || !userId) {
+            console.warn('[GameSocket] Missing roomId or userId in start-turn');
+            return;
+        }
+        try {
+            await TurnEngine.startTurn(this.io, roomId);
+        } catch (err) {
+            console.error('[GameSocket] Failed to handle start-turn:', err);
+        }
+    }
+
+    async handleEndTurn({ roomId, userId }) {
+        if (!roomId || !userId) {
+            console.warn('[GameSocket] Missing roomId or userId in start-turn');
+            return;
+        }
+        try {
+            await TurnEngine.endTurn(this.io, roomId);
+        } catch (err) {
+            console.error('[GameSocket] Failed to handle start-turn:', err);
+        }
+    }
+
+    async handleLeaveGame({ roomId, userId }) {
+        if (!roomId || !userId) {
+            console.warn('[GameSocket] Missing roomId or userId in leave-game');
+            return;
+        }
+
+        try {
+            const players = await Player.getPlayersByRoomId(roomId);
+            if (players.length < 2) {
+                console.warn('[GameSocket] Not enough players in the room to process leave-game');
+                return;
+            }
+
+            const leaver = players.find(p => p.user_id === userId);
+            const opponent = players.find(p => p.user_id !== userId);
+
+            if (!opponent) {
+                console.warn('[GameSocket] Could not find opponent in leave-game');
+                return;
+            }
+
+            await Room.setWinner(roomId, opponent.user_id);
+            await Room.setFinishedStatus(roomId);
+
+            this.io.to(roomId).emit('game-ended', {
+                roomId,
+                winner: opponent.user_id,
+                loser: userId
+            });
+
+            console.log(`[GameSocket] Player ${userId} left the game. Opponent ${opponent.user_id} wins.`);
+        } catch (err) {
+            console.error('[GameSocket] Failed to handle leave-game:', err);
+        }
+    }
 
 
     async handleDealDeck({ roomId, userId, role }) {

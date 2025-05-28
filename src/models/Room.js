@@ -73,12 +73,24 @@ class Room extends Model {
         return await this.query("UPDATE rooms SET status = 'finished' WHERE id = ?", [id]);
     }
 
-    async getTurn(roomId) {
+    async getTurnPlayer(roomId) {
         const result = await this.query("SELECT current_turn_player_id FROM rooms WHERE id = ?", [roomId]);
         return result[0] || null;
     }
 
-    async setCurrentTurn(roomId, playerId) {
+    async getTurnNumber(roomId) {
+        const result = await this.query("SELECT turn_number FROM rooms WHERE id = ?", [roomId]);
+        return result[0] || null;
+    }
+
+    async incrementTurn(roomId) {
+        return this.query(
+            "UPDATE rooms SET turn_number = turn_number + 1 WHERE id = ?",
+            [roomId]
+        );
+    }
+
+    async setTurnPlayer(roomId, playerId) {
         return this.query(
             "UPDATE rooms SET current_turn_player_id = ? WHERE id = ?",
             [playerId, roomId]
