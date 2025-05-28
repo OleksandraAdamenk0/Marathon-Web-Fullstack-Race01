@@ -1,4 +1,4 @@
 .idea
-.env.example
+.env
 node_modules
 
