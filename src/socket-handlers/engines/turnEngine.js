@@ -101,7 +101,7 @@ class TurnEngine {
     static async playCard({roomId, userId, cardId, destination}) {
 
         const whosTurn = await roomModel.getTurnPlayer(roomId);
-        if (whosTurn !== userId) return {ok: false, reason: 'Not your turn'};
+        if (whosTurn.current_turn_player_id !== Number(userId)) return {ok: false, reason: 'Not your turn'};
 
         const room = await roomModel.getById(roomId);
         if (!room) return {ok: false, reason: 'Room not found'};
@@ -109,7 +109,7 @@ class TurnEngine {
         const player = await playerModel.getPlayersByRoomId(userId, roomId);
         const card = await cardModel.getById(cardId);
 
-        const pc = await playersCards.getSpecific(player.id, roomId, cardId, 'hand'); //todo
+        const pc = await playersCards.getSpecific(player.id, roomId, cardId, 'hand');
         if (!pc) return {ok: false, reason: 'Card not in hand'};
 
         if (player.energy < card.cost) return {ok: false, reason: 'Not enough energy'};

@@ -1,6 +1,15 @@
 const RoomModel = require('../models/Room');
 const roomModel = new RoomModel();
 
+const {
+    getSocketId,
+    addUser,
+    removeUserBySocket,
+    hasUser,
+    listUsers
+} = require('../utils/connectedUsers');
+
+
 class RoomSocketHandler {
     constructor(io, socket) {
         this.io = io;
@@ -57,8 +66,7 @@ console.log(`[Server] Emitted room-update for room ${roomId}`);
             await roomModel.setWinner(roomId, opponentUserId);
             await roomModel.setFinishedStatus(roomId);
 
-            const { connectedUsers } = require('./socketUtils');
-            const opponentSocketId = connectedUsers.get(opponentUserId);
+            const opponentSocketId = getSocketId(opponentUserId);
 
             if (opponentSocketId) {
                 this.io.to(opponentSocketId).emit('game-ended', {
