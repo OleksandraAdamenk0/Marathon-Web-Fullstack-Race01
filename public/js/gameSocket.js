@@ -175,6 +175,11 @@ cardElem.src = backImage;
         finalCard.dataset.playerCardId = card.id;
         finalCard.dataset.zone = card.zone;
         finalCard.dataset.cardType = card.card_type;
+        finalCard.style.width = '100%';
+        finalCard.style.height = '100%';
+        finalCard.style.objectFit = 'contain';
+        finalCard.style.display = 'block';
+        finalCard.style.zIndex = '500';
       
 
 
@@ -212,14 +217,11 @@ icon.src = `/images/cards/icons.png`;
 icon.alt = 'card icon';
 icon.className = 'card-icon-overlay';
 
-cardWrapper.appendChild(icon); // ⬅️ put icon inside the wrapper
-handSlot.appendChild(cardWrapper); // then append the whole thing
 cardWrapper.appendChild(icon);
 handSlot.appendChild(cardWrapper);
 if (window.IS_MY_TURN) {
   finalCard.addEventListener('click', () => {
     const cardType = finalCard.dataset.cardType;
-
     let zoneType = '';
     if (cardType.includes('farmer')) {
       zoneType = 'farm';
@@ -232,38 +234,28 @@ if (window.IS_MY_TURN) {
       return;
     }
 
-    console.log('Looking for farmer zones...');
-    document.querySelectorAll('.player-farmer').forEach((f, i) =>
-      console.log(`Slot ${i}: has ${f.children.length} children`)
-    );
+    const farmersContainer = document.querySelector('.farmers');
+
+
     
-    let targetSelector = '';
-    if (zoneType === 'leader') targetSelector = '.player-leader';
-    else if (zoneType === 'farm') {
-      const farmSlots = document.querySelectorAll('.player-farmer');
-      
-      const target = [...farmSlots].find(slot => slot.children.length === 0);
-      if (!target) return;
-      targetSelector = '.' + target.className.split(' ').join('.');
+    let target = null;
+
+    if (zoneType === 'leader') {
+      target = document.querySelector('.leader');
+    } else if (zoneType === 'farm') {
+      target = document.querySelector('.farmers');
     } else if (zoneType === 'board') {
       const troopSlots = document.querySelectorAll('.player-troop');
-      const target = [...troopSlots].find(slot => slot.children.length === 0);
-      if (!target) return;
-      targetSelector = '#' + target.id;
+      target = [...troopSlots].find(slot => slot.children.length === 0);
     }
 
-    if (!targetSelector) {
-      console.warn('[PlayCard] targetSelector was empty — zoneType:', zoneType);
-      return;
-    }
-    const target = document.querySelector(targetSelector);
     if (!target) {
       console.warn('[PlayCard] No target found for zone:', zoneType);
       return;
     }
 
     console.log('[PlayCard] IS_MY_TURN:', window.IS_MY_TURN);
-console.log('[PlayCard] Emitting play-card for', finalCard.dataset.playerCardId, 'to', zoneType);
+    console.log('[PlayCard] Emitting play-card for', finalCard.dataset.playerCardId, 'to', zoneType);
 
 
     window.socket.emit('play-card', {
@@ -345,31 +337,6 @@ function renderEnemyHand(cardCount = 5, teamType = 'survivors') {
 
         wrapper.appendChild(img);
         enemyRow.appendChild(wrapper);
-
-        /*if (window.IS_MY_TURN) {
-          finalCard.addEventListener('click', () => {
-            const zoneType = finalCard.dataset.zone;
-        
-            let targetSelector = '';
-            if (zoneType === 'leader') targetSelector = '.player-leader';
-            else if (zoneType === 'farm') targetSelector = '.player-farmer';
-            else if (zoneType === 'board') {
-              // Find first empty slot on board
-              const slots = document.querySelectorAll('.player-troop');
-              const emptySlot = [...slots].find(div => div.children.length === 0);
-              if (emptySlot) emptySlot.appendChild(cardWrapper);
-              return;
-            }
-        
-            if (targetSelector) {
-              const target = document.querySelector(targetSelector);
-              if (target) {
-                target.innerHTML = ''; // Clear existing card
-                target.appendChild(cardWrapper);
-              }
-            }
-          });
-        }*/
     }
 }
 

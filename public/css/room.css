@@ -42,6 +42,10 @@ body {
      object-fit: cover;
  }
 
+ .card.player-hand-card {
+    border: 2px dashed red;
+    z-index: 2000;
+  }
 /* me as a player */
 
 .player-info {
