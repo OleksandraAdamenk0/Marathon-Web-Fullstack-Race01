@@ -128,9 +128,11 @@ class TurnEngine {
         if (!room) return {ok: false, reason: 'Room not found'};
 
         const player = await playerModel.getPlayersByRoomId(userId, roomId);
-        const card = await cardModel.getById(cardId);
+
+
 
         const pc = await playersCards.getByPlayerCardId(cardId, roomId, 'hand');
+        const card = pc;
 
         if (!pc) return {ok: false, reason: 'Card not in hand'};
 
