@@ -64,12 +64,11 @@ class PlayersCardsModel extends Model {
     }
 
     async getSpecific(playerId, roomId, cardId, zone, instanceNumber = null) {
-        let sql = `SELECT *
-                   FROM players_cards
-                   WHERE player_id = ?
-                     AND room_id = ?
-                     AND card_id = ?
-                     AND zone = ?`;
+        let sql = `SELECT * FROM players_cards
+                    WHERE id = ?
+                    AND room_id = ?
+                    AND zone = 'hand'
+`;
         let params = [playerId, roomId, cardId, zone];
 
         if (instanceNumber !== null) {

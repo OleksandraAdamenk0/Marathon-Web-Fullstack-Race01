@@ -109,7 +109,8 @@ class TurnEngine {
         const player = await playerModel.getPlayersByRoomId(userId, roomId);
         const card = await cardModel.getById(cardId);
 
-        const pc = await playersCards.getSpecific(player.id, roomId, cardId, 'hand');
+        const pc = await playersCards.getByPlayerCardId(cardId, roomId, 'hand');
+
         if (!pc) return {ok: false, reason: 'Card not in hand'};
 
         if (player.energy < card.cost) return {ok: false, reason: 'Not enough energy'};
