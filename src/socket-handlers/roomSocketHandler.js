@@ -49,20 +49,31 @@ console.log(`[Server] Emitted room-update for room ${roomId}`);
 
         const room = await roomModel.getById(roomId);
 
-        if ((room.player_one_id.toString() === user.id && room.player_two_id === null) ||
-            (room.player_two_id.toString() === user.id && room.player_one_id === null)) {
+        const opponentUserId = room.player_one_id.toString() === user.id
+            ? room.player_two_id
+            : room.player_one_id;
+
+        if (opponentUserId) {
+            await roomModel.setWinner(roomId, opponentUserId);
             await roomModel.setFinishedStatus(roomId);
-        } else if (room.player_one_id.toString() === user.id) {
-            // send a winning msg to the other player
-            // redirect the other player to the menu page
-            await roomModel.setWinner(roomId, room.player_two_id);
-            await roomModel.setFinishedStatus(roomId);
-        } else if (room.player_two_id.toString() === user.id) {
-            // send a winning msg to the other player
-            // redirect the other player to the menu page
-            await roomModel.setWinner(roomId, room.player_one_id);
-            await roomModel.setFinishedStatus(roomId);
+
+            const { connectedUsers } = require('./socketUtils');
+            const opponentSocketId = connectedUsers.get(opponentUserId);
+
+            if (opponentSocketId) {
+                this.io.to(opponentSocketId).emit('game-ended', {
+                    roomId,
+                    winner: opponentUserId,
+                    loser: user.id
+                });
+
+                this.io.to(opponentSocketId).emit('redirect-to-menu', { roomId });
+                console.log(`[RoomSocket] Notified opponent (${opponentUserId}) that game ended`);
+            } else {
+                console.warn(`[RoomSocket] Opponent (${opponentUserId}) socket not found`);
+            }
         }
+
     }
 
     async utilReadyToStart(roomId) {
