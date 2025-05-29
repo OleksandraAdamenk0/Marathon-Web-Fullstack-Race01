@@ -174,6 +174,7 @@ cardElem.src = backImage;
         finalCard.dataset.instanceNumber = card.instanceNumber;
         finalCard.dataset.playerCardId = card.id;
         finalCard.dataset.zone = card.zone;
+        finalCard.dataset.cardType = card.card_type;
       
 
 
@@ -213,6 +214,73 @@ icon.className = 'card-icon-overlay';
 
 cardWrapper.appendChild(icon); // ⬅️ put icon inside the wrapper
 handSlot.appendChild(cardWrapper); // then append the whole thing
+cardWrapper.appendChild(icon);
+handSlot.appendChild(cardWrapper);
+if (window.IS_MY_TURN) {
+  finalCard.addEventListener('click', () => {
+    const cardType = finalCard.dataset.cardType;
+
+    let zoneType = '';
+    if (cardType.includes('farmer')) {
+      zoneType = 'farm';
+    } else if (cardType.includes('leader')) {
+      zoneType = 'leader';
+    } else if (cardType.includes('creature')) {
+      zoneType = 'board';
+    } else {
+      console.warn('[PlayCard] Unknown card type:', cardType);
+      return;
+    }
+
+    console.log('Looking for farmer zones...');
+    document.querySelectorAll('.player-farmer').forEach((f, i) =>
+      console.log(`Slot ${i}: has ${f.children.length} children`)
+    );
+    
+    let targetSelector = '';
+    if (zoneType === 'leader') targetSelector = '.player-leader';
+    else if (zoneType === 'farm') {
+      const farmSlots = document.querySelectorAll('.player-farmer');
+      
+      const target = [...farmSlots].find(slot => slot.children.length === 0);
+      if (!target) return;
+      targetSelector = '.' + target.className.split(' ').join('.');
+    } else if (zoneType === 'board') {
+      const troopSlots = document.querySelectorAll('.player-troop');
+      const target = [...troopSlots].find(slot => slot.children.length === 0);
+      if (!target) return;
+      targetSelector = '#' + target.id;
+    }
+
+    if (!targetSelector) {
+      console.warn('[PlayCard] targetSelector was empty — zoneType:', zoneType);
+      return;
+    }
+    const target = document.querySelector(targetSelector);
+    if (!target) {
+      console.warn('[PlayCard] No target found for zone:', zoneType);
+      return;
+    }
+
+    console.log('[PlayCard] IS_MY_TURN:', window.IS_MY_TURN);
+console.log('[PlayCard] Emitting play-card for', finalCard.dataset.playerCardId, 'to', zoneType);
+
+
+    window.socket.emit('play-card', {
+      roomId: window.ROOM_ID,
+      userId: window.USER_ID,
+      data: {
+        cardId: finalCard.dataset.playerCardId,
+        destination: zoneType
+      }
+    });
+
+
+    target.innerHTML = '';
+    target.appendChild(cardWrapper);
+
+  });
+}
 
       }
       
