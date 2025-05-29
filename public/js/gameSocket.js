@@ -47,6 +47,9 @@ socket.on('deck-built', ({ hand, deckStats, teamType }) => {
 });
 
 
+
+
+
 socket.on('room-update', async ({ roomId }) => {
     if (!window.ROOM_ID || window.ROOM_ID !== roomId.toString()) return;
 
@@ -77,6 +80,20 @@ socket.on('room-update', async ({ roomId }) => {
     }
   });
 
+
+  socket.on('turn-started', ({ currentPlayer }) => {
+    const isMyTurn = currentPlayer.toString() === window.USER_ID.toString();
+    window.IS_MY_TURN = isMyTurn;
+  
+    const indicator = document.getElementById('turn-indicator');
+    if (!indicator) return;
+  
+    
+    indicator.style.transform = isMyTurn ? 'rotate(0deg)' : 'rotate(180deg)';
+    indicator.title = isMyTurn ? 'Your Turn' : 'Opponent Turn';
+  });
+  
+
   function renderPlayerHand(hand, teamType) {
     const playerRow = document.querySelector('.player-row');
     if (!playerRow) return console.warn('[Render] No .player-row element found');
@@ -100,7 +117,7 @@ const placeholderImg = document.createElement('img');
 placeholderImg.className = 'card player-hand-card';
 placeholderImg.src = backImage;
 placeholderImg.alt = 'card back';
-placeholderImg.style.visibility = 'hidden'; // hide it but it sets the size
+placeholderImg.style.visibility = 'hidden';
 handSlot.appendChild(placeholderImg);
       animateCardToHand(card, index, handSlot, teamType);
     });
@@ -120,8 +137,8 @@ handSlot.appendChild(placeholderImg);
 cardElem.src = backImage;
 
     cardElem.style.position = 'absolute';
-    cardElem.style.left = '0px'; // <--- Important
-    cardElem.style.top = '0px';  // <--- Important
+    cardElem.style.left = '0px';
+    cardElem.style.top = '0px';
     cardElem.style.width = getComputedStyle(handSlot).width;
     cardElem.style.height = getComputedStyle(handSlot).height;
 
@@ -153,7 +170,6 @@ cardElem.src = backImage;
         finalCard.className = 'card player-hand-card';
         finalCard.alt = card.name;
         finalCard.title = card.description;
-        finalCard.draggable = true;
         finalCard.dataset.cardId = card.cardId;
         finalCard.dataset.instanceNumber = card.instanceNumber;
         finalCard.dataset.playerCardId = card.id;
@@ -167,8 +183,8 @@ cardElem.src = backImage;
         };
       
         const cardWrapper = document.createElement('div');
-cardWrapper.className = 'card-wrapper';
-cardWrapper.appendChild(finalCard);
+    cardWrapper.className = 'card-wrapper';
+    cardWrapper.appendChild(finalCard);
 
 // Cost (top-left)
 const costText = document.createElement('div');
@@ -224,7 +240,9 @@ handSlot.appendChild(cardWrapper); // then append the whole thing
     });
   }
   
-  
+  // Enable click-to-move if it's player's turn
+
+
 
 function renderEnemyHand(cardCount = 5, teamType = 'survivors') {
     const enemyRow = document.querySelector('.enemy-row');
@@ -249,6 +267,31 @@ function renderEnemyHand(cardCount = 5, teamType = 'survivors') {
 
         wrapper.appendChild(img);
         enemyRow.appendChild(wrapper);
+
+        /*if (window.IS_MY_TURN) {
+          finalCard.addEventListener('click', () => {
+            const zoneType = finalCard.dataset.zone;
+        
+            let targetSelector = '';
+            if (zoneType === 'leader') targetSelector = '.player-leader';
+            else if (zoneType === 'farm') targetSelector = '.player-farmer';
+            else if (zoneType === 'board') {
+              // Find first empty slot on board
+              const slots = document.querySelectorAll('.player-troop');
+              const emptySlot = [...slots].find(div => div.children.length === 0);
+              if (emptySlot) emptySlot.appendChild(cardWrapper);
+              return;
+            }
+        
+            if (targetSelector) {
+              const target = document.querySelector(targetSelector);
+              if (target) {
+                target.innerHTML = ''; // Clear existing card
+                target.appendChild(cardWrapper);
+              }
+            }
+          });
+        }*/
     }
 }
 
@@ -309,7 +352,9 @@ function renderPlayerBoard(boardState) {
     
   
     try {
-      const response = await fetch(`/api/game/get-hand-and-board?room_id=${roomId}`);
+      const response = await fetch(`/api/game/get-hand-and-board?room_id=${roomId}`, {
+        credentials: 'include' // ✅ Send cookies to server
+      });
       const data = await response.json();
   
       console.log('[Reload] Server responded:', data);
@@ -333,39 +378,6 @@ renderDeckBackside(teamType);
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    // Enable drag on hand cards
-    document.querySelectorAll('.player-hand-card').forEach(card => {
-      card.draggable = true;
-      card.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text/plain', JSON.stringify({
-          cardId: card.dataset.cardId // Important: use cardId, not playerCardId
-        }));
-      });
-    });
-  
-    // Enable drop on zones
-    document.querySelectorAll('.player-troop, .player-farmer, .player-leader').forEach(zone => {
-      zone.addEventListener('dragover', (e) => e.preventDefault());
-  
-      zone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        const { cardId } = JSON.parse(e.dataTransfer.getData('text/plain'));
-        const destination = getZoneFromElement(zone);
-  
-        const payload = {
-          roomId: window.ROOM_ID,
-          userId: window.USER_ID,
-          data: {
-            cardId,
-            destination
-          }
-        };
-  
-        window.socket.emit('play-card', payload);
-      });
-    });
-  
     // Server responses
     window.socket.on('hand-update', ({ hand }) => {
       console.log('[Client] Hand updated');
@@ -380,7 +392,6 @@ renderDeckBackside(teamType);
     window.socket.on('turn-error', ({ reason }) => {
       alert(`Card move failed: ${reason}`);
     });
-  });
   
   function getZoneFromElement(el) {
     if (el.classList.contains('player-troop')) return 'board';

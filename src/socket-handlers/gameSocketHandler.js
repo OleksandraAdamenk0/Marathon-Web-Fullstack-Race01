@@ -228,6 +228,8 @@ class GameSocketHandler {
             };
 
             sendMessageToRoom(this.io, roomId, 'match-initialized', matchStartData);
+            
+            await TurnEngine.startTurn(this.io, roomId);
 
             console.log(`[GameSocket] Match started in room ${roomId}, first turn: user ${gameData.currentTurnUserId}`);
 

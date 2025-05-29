@@ -132,6 +132,13 @@ body {
     align-items: center;
 }
 
+#turn-indicator {
+    transition: transform 0.4s ease, filter 0.4s ease;
+    transform-origin: center;
+    width: 40px;
+    height: 40px;
+}
+
 .farmers {
     grid-column: 1;
     grid-row: 5 / span 2;

@@ -119,7 +119,7 @@ class Room extends Model {
             const firstPlayerIndex = Math.floor(Math.random() * 2);
             const firstPlayer = players[firstPlayerIndex];
 
-            await this.setCurrentTurn(roomId, firstPlayer.user_id);
+            await this.setTurnPlayer(roomId, firstPlayer.user_id);
             await this.updateRoomStatus(roomId, 'in-progress');
 
             console.log(`[Room Model] Game initialized: ${firstPlayer.role} (user ${firstPlayer.user_id}) goes first in room ${roomId}`);
