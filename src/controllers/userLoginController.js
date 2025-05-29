@@ -12,7 +12,7 @@ async function UserLoginController(req, res) {
         const user = await User.getUserByEmail(email);
         if (!user) { return res.status(400).json({error: 'User not found'}); }
 
-        const passwordMatch = User.comparePassword(password, user.id);
+        const passwordMatch = await User.comparePassword(password, user.id);
         if (!passwordMatch) return res.status(400).json({error: 'Invalid password'});
 
         if (!await User.isEmailVerified(user.id)) {

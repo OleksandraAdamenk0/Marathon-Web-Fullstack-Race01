@@ -40,7 +40,7 @@ class User extends Model {
     async comparePassword(password, id) {
         const user = await this.getById(id);
         if (!user) return false;
-        return bcrypt.compare(password, user.password_hash);
+        return await bcrypt.compare(password, user.password_hash);
     }
 
     async isEmailVerified(id) {
