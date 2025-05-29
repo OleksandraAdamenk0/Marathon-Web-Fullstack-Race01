@@ -4,6 +4,7 @@ const getUserProfileController = require("../controllers/getUserProfileControlle
 const getMailboxUrl = require("../utils/getMailBoxUrl");
 const getMenuController = require('../controllers/getMenuController');
 const roomController = require('../controllers/roomControllers/roomController');
+const profileRouter = require('./profileRouter');
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.get('/login', (req, res) => {res.render('auth', {format: 'login'});});
 
 router.get('/room/:roomId', authenticateAccessToken, roomController);
 
-router.get('/profile/:id', authenticateAccessToken, getUserProfileController);
+router.use('/profile', profileRouter);
 
 router.get('/verify-email/:email', (req, res) => {
     res.render('auth', {format: "confirm", email: req.params.email, mailBox: getMailboxUrl(req.params.email)});

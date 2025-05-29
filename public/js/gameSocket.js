@@ -19,11 +19,11 @@ socket.on('connect', () => {
     console.log('[Client] Sent start-game', { roomId, userId });
   } else {
     console.warn('[Socket] Missing ROOM_ID or USER_ID on connect');
-
-
   }
 
 });
+
+
 
 socket.on('role-assigned', (data) => {
   console.log('[Client] Role assigned:', data);

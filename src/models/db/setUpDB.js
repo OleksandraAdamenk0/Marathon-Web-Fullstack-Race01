@@ -41,7 +41,7 @@ const createRoomsTableSQL = `
         current_turn_player_id INT DEFAULT NULL,
         FOREIGN KEY (player_one_id) REFERENCES users(id),
         FOREIGN KEY (player_two_id) REFERENCES users(id)
-    )
+    );
 `
 
 const createPlayersTableSQL = `
@@ -54,7 +54,8 @@ const createPlayersTableSQL = `
         energy INT NOT NULL DEFAULT 10,
         FOREIGN KEY (user_id) REFERENCES users(id),
         FOREIGN KEY (room_id) REFERENCES rooms(id)
-    )
+        ON DELETE CASCADE
+    );
 `
 
 const createCardsTableSQL = `
@@ -69,7 +70,7 @@ const createCardsTableSQL = `
         card_type ENUM('creature', 'spell', 'leader', 'energy_farmer'),
         description VARCHAR(255) DEFAULT NULL,
         deck_quantity INT NOT NULL DEFAULT 1
-    )
+    );
 `;
 
 

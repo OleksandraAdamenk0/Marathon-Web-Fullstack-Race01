@@ -1,34 +1,53 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const reloadBtn = document.getElementById('reload-rooms-btn');
   const overlay = document.getElementById('room-loading-overlay');
+  await reloadRooms(overlay);
 
-  async function reloadRooms() {
-    if (!overlay) return;
-    overlay.style.display = 'flex';
+  if (reloadBtn) { reloadBtn.addEventListener('click', await reloadRooms); }
 
+  setTimeout(() => {
     try {
-      const response = await fetch('/api/room/public/available');
+      if (overlay) overlay.style.display = 'none';
+    } catch (e) {
+      console.warn('[Overlay fallback] Error hiding overlay:', e);
+    }
+  }, 1000);
 
-      const data = await response.json();
-      const rooms = data.rooms || data.roomsData || [];
+  socket.on('room-created', async () => {
+    console.log('[Socket] New room created, reloading list');
+    await reloadRooms(overlay);
+  });
+});
 
-      const tbody = document.querySelector('.room-table tbody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
+async function reloadRooms(overlay) {
+  console.log('[Reload Rooms] Reloading rooms...');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
 
-      if (rooms.length === 0) {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="4" style="text-align: center; padding: 100px 0; color: rgba(255, 255, 255, 0.7); font-style: italic;">It is weirdly quiet here today...</td>`;
-        tbody.appendChild(row);
-        return;
-      }
+  try {
+    const response = await fetch('/api/room/public/available');
 
-      rooms.filter(room => room.status !== 'finished').forEach((room, index) => {
-        const players = room.player_two_id ? 2 : 1;
-        const isFull = players === 2;
+    const data = await response.json();
+    console.log("abailable: ", data);
+    const rooms = data.rooms || data.roomsData || [];
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
+    const tbody = document.querySelector('.room-table tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (rooms.length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td colspan="4" style="text-align: center; padding: 100px 0; color: rgba(255, 255, 255, 0.7); font-style: italic;">It is weirdly quiet here today...</td>`;
+      tbody.appendChild(row);
+      return;
+    }
+
+    rooms.filter(room => room.status !== 'finished').forEach((room, index) => {
+      const players = room.player_two_id ? 2 : 1;
+      const isFull = players === 2;
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
           <td>
             ${room.code ? "<box-icon type='solid' name='lock-alt' size='1em' color='white'></box-icon>" : ''}
             #${index + 1}
@@ -42,33 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
             </form>
           </td>
         `;
-        tbody.appendChild(row);
-      });
+      tbody.appendChild(row);
+    });
 
-    } catch (err) {
-      console.error('[Room Reload Error]', err);
-      alert('Failed to reload rooms.');
-    } finally {
-      setTimeout(() => {
-        if (overlay) overlay.style.display = 'none';
-      }, 500);
-    }
-  }
-
-  if (reloadBtn) {
-    reloadBtn.addEventListener('click', reloadRooms);
-  }
-
-  setTimeout(() => {
-    try {
+  } catch (err) {
+    console.error('[Room Reload Error]', err);
+    alert('Failed to reload rooms.');
+  } finally {
+    setTimeout(() => {
       if (overlay) overlay.style.display = 'none';
-    } catch (e) {
-      console.warn('[Overlay fallback] Error hiding overlay:', e);
-    }
-  }, 1000);
-
-  socket.on('room-created', () => {
-    console.log('[Socket] New room created, reloading list');
-    reloadRooms();
-  });
-});
+    }, 500);
+  }
+}

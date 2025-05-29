@@ -16,6 +16,8 @@ class RoomSocketHandler {
 
     async handleJoinRoom({ roomId, user }) {
      console.log(`[Server] handleJoinRoom triggered for ${user.username} in room ${roomId}`);
+        this.socket.user = user;
+        this.socket.roomId = roomId;
         this.socket.join(roomId);
         console.log(`[RoomSocket] ${user.username} (${this.socket.id}) joined room ${roomId}`);
 
@@ -34,14 +36,33 @@ console.log(`[Server] Emitted room-update for room ${roomId}`);
         }
     }
 
-    async handleLeaveRoom({ roomId, user }) {
+    async handleLeaveRoom({ roomId }) {
+        const user = this.socket.user;
+
         this.socket.leave(roomId);
-        console.log(`[RoomSocket] ${user.username} (${this.socket.id}) left room ${roomId}`);
+        console.log(`[RoomSocket] ${user?.username || 'Unknown'} (${this.socket.id}) left room ${roomId}`);
 
         this.socket.to(roomId).emit('player-left', {
             user,
             socketId: this.socket.id,
         });
+
+        const room = await roomModel.getById(roomId);
+
+        if ((room.player_one_id.toString() === user.id && room.player_two_id === null) ||
+            (room.player_two_id.toString() === user.id && room.player_one_id === null)) {
+            await roomModel.setFinishedStatus(roomId);
+        } else if (room.player_one_id.toString() === user.id) {
+            // send a winning msg to the other player
+            // redirect the other player to the menu page
+            await roomModel.setWinner(roomId, room.player_two_id);
+            await roomModel.setFinishedStatus(roomId);
+        } else if (room.player_two_id.toString() === user.id) {
+            // send a winning msg to the other player
+            // redirect the other player to the menu page
+            await roomModel.setWinner(roomId, room.player_one_id);
+            await roomModel.setFinishedStatus(roomId);
+        }
     }
 
     async utilReadyToStart(roomId) {

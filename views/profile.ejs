@@ -12,7 +12,7 @@
 <body>
     <div class="main-bg">
         <div class="go-back-wrapper">
-            <button class="go-back-button" onclick="history.back()">
+            <button class="go-back-button" onclick="window.location.href='/menu'">
                 <i class='bx bxs-arrow-from-right' ></i>
             </button>
         </div>
@@ -52,9 +52,15 @@
                 <form id="avatar-reset" action="/api/images/avatar/reset" method="POST">
                     <button class="avatar-button" type="submit">Reset to Default</button>
                 </form>
+
+                <form id="logout" action="/api/profile/<%= currentUser.id %>/logout" method="POST">
+                    <button class="avatar-button" type="submit">Log out</button>
+                </form>
             </div>
           <% } %>     
     </div>
+
+    <p>currentUser: <%= JSON.stringify(currentUser) %></p>
 
 </body>
 </html>
