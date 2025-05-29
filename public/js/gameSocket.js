@@ -308,8 +308,18 @@ console.log('[PlayCard] Emitting play-card for', finalCard.dataset.playerCardId,
     });
   }
   
-  // Enable click-to-move if it's player's turn
+  socket.on('turn-started', ({ currentPlayer }) => {
+    const isMyTurn = currentPlayer.toString() === window.USER_ID.toString();
+    window.IS_MY_TURN = isMyTurn;
+    console.log(`[TURN] currentPlayer=${currentPlayer}, USER_ID=${window.USER_ID}, IS_MY_TURN=${isMyTurn}`);
 
+    const indicator = document.getElementById('turn-indicator');
+    if (!indicator) return;
+  
+    
+    indicator.style.transform = isMyTurn ? 'rotate(0deg)' : 'rotate(180deg)';
+    indicator.title = isMyTurn ? 'Your Turn' : 'Opponent Turn';
+  });
 
 
 function renderEnemyHand(cardCount = 5, teamType = 'survivors') {
