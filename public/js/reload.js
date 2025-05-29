@@ -64,6 +64,57 @@ async function reloadRooms(overlay) {
       tbody.appendChild(row);
     });
 
+      document.querySelectorAll('.join-button').forEach(button => {
+        button.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const roomId = button.dataset.roomId;
+          const isPrivate = button.dataset.isPrivate === 'true';
+
+          if (isPrivate) {
+            const modal = document.getElementById('enter-password');
+            modal.classList.remove('hidden');
+
+            document.getElementById('submit-password-btn').onclick = () => {
+              const password = document.getElementById('join-password').value;
+              if (!password) return alert('Please enter a password.');
+
+              const form = document.createElement('form');
+              form.method = 'POST';
+              form.action = `/api/room/join/${roomId}`;
+
+              const input = document.createElement('input');
+              input.type = 'hidden';
+              input.name = 'code';
+              input.value = password;
+
+              form.appendChild(input);
+              document.body.appendChild(form);
+              form.submit();
+            };
+
+            document.getElementById('cancel-join-btn').onclick = () => {
+              modal.classList.add('hidden');
+              document.getElementById('join-password').value = '';
+            };
+
+          } else {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/api/room/join/${roomId}`;
+            document.body.appendChild(form);
+            form.submit();
+          }
+        });
+      });
+
+    } catch (err) {
+      console.error('[Room Reload Error]', err);
+      alert('Failed to reload rooms.');
+    } finally {
+      setTimeout(() => {
+        if (overlay) overlay.style.display = 'none';
+      }, 500);
+    }
   } catch (err) {
     console.error('[Room Reload Error]', err);
     alert('Failed to reload rooms.');

@@ -10,12 +10,11 @@ class Room extends Model {
         return  await this.getById(result.insertId);
     }
 
-    async createPrivateRoom(userId) {
-        const result = await this.query("INSERT INTO rooms (player_one_id) VALUES (?);", [userId]);
-        const room = await this.getById(result.insertId);
-        if (!room) return null;
-        const code = String(room.id).padStart(5, '0');
-        await this.query("UPDATE rooms SET code = ? WHERE id = ?", [code, room.id]);
+    async createPrivateRoom(userId, code) {
+        const result = await this.query(
+            "INSERT INTO rooms (player_one_id, code) VALUES (?, ?);",
+            [userId, code]
+        );
         return await this.getById(result.insertId);
     }
 
