@@ -98,7 +98,7 @@ class GameSocketHandler {
 
     async handleEndTurn({ roomId, userId }) {
         if (!roomId || !userId) {
-            console.warn('[GameSocket] Missing roomId or userId in start-turn');
+            console.warn('[GameSocket] Missing roomId or userId in end-turn');
             return;
         }
         try {

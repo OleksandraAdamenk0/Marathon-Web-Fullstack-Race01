@@ -1,3 +1,6 @@
+import { startTurnTimer, stopTurnTimer, resetTurnTimerDisplay } from './turnTimer.js';
+
+
 if (!sessionStorage.getItem('alreadyReloaded')) {
   sessionStorage.setItem('alreadyReloaded', 'false');
 }
@@ -46,8 +49,33 @@ socket.on('deck-built', ({ hand, deckStats, teamType }) => {
     renderDeckBackside(teamType);
 });
 
+socket.on('match-initialized', (data) => {
+  console.log('[Socket] Match initialized:', data);
 
+  const currentTurn = data.currentTurn;
+  window.CURRENT_TURN_PLAYER = currentTurn;
 
+  const isMyTurn = currentTurn.toString() === window.USER_ID.toString();
+  window.IS_MY_TURN = isMyTurn;
+
+  console.log(`[TURN] currentPlayer=${currentTurn}, USER_ID=${window.USER_ID}, IS_MY_TURN=${isMyTurn}`);
+
+  resetTurnTimerDisplay();
+startTurnTimer(() => {
+  if (isMyTurn) {
+    console.log('[Timer] Time is up! Emitting end-turn with:', {
+      roomId: window.ROOM_ID,
+      userId: window.USER_ID
+    });
+    socket.emit('end-turn', {
+      roomId: window.ROOM_ID,
+      userId: window.USER_ID
+    });
+  } else {
+    console.log('[Timer] Opponent’s timer ended, ignoring on this client.');
+  }
+});
+});
 
 
 socket.on('room-update', async ({ roomId }) => {
@@ -83,15 +111,32 @@ socket.on('room-update', async ({ roomId }) => {
 
   socket.on('turn-started', ({ currentPlayer }) => {
     const isMyTurn = currentPlayer.toString() === window.USER_ID.toString();
-    window.IS_MY_TURN = isMyTurn;
+    console.log(`[TURN] currentPlayer=${currentPlayer}, USER_ID=${window.USER_ID}, IS_MY_TURN=${isMyTurn}`);
   
     const indicator = document.getElementById('turn-indicator');
     if (!indicator) return;
   
-    
     indicator.style.transform = isMyTurn ? 'rotate(0deg)' : 'rotate(180deg)';
     indicator.title = isMyTurn ? 'Your Turn' : 'Opponent Turn';
+
+    resetTurnTimerDisplay();
+    startTurnTimer(() => {
+      if (isMyTurn) {
+        console.log('[Timer] Time is up! Emitting end-turn with:', {
+          roomId: window.ROOM_ID,
+          userId: window.USER_ID
+        });
+        socket.emit('end-turn', {
+          roomId: window.ROOM_ID,
+          userId: window.USER_ID
+        });
+      } else {
+        console.log('[Timer] Opponent’s timer ended, ignoring on this client.');
+      }
+    });
+
   });
+  
   
 
   function renderPlayerHand(hand, teamType) {
@@ -301,9 +346,11 @@ if (window.IS_MY_TURN) {
   }
   
   socket.on('turn-started', ({ currentPlayer }) => {
-    const isMyTurn = currentPlayer.toString() === window.USER_ID.toString();
-    window.IS_MY_TURN = isMyTurn;
-    console.log(`[TURN] currentPlayer=${currentPlayer}, USER_ID=${window.USER_ID}, IS_MY_TURN=${isMyTurn}`);
+    console.log('[TURN-STARTED EVENT] Received from server. currentPlayer =', currentPlayer);
+
+  window.CURRENT_TURN_PLAYER = currentPlayer;
+  const isMyTurn = currentPlayer.toString() === window.USER_ID.toString();
+  window.IS_MY_TURN = isMyTurn;
 
     const indicator = document.getElementById('turn-indicator');
     if (!indicator) return;
@@ -398,7 +445,7 @@ function renderPlayerBoard(boardState) {
   
     try {
       const response = await fetch(`/api/game/get-hand-and-board?room_id=${roomId}`, {
-        credentials: 'include' // ✅ Send cookies to server
+        credentials: 'include'
       });
       const data = await response.json();
   
@@ -409,11 +456,11 @@ function renderPlayerBoard(boardState) {
         
 
         const teamType = window.PLAYER_TEAM_TYPE || 'survivors';
-const opponentTeam = teamType === 'infected' ? 'survivors' : 'infected';
-renderPlayerHand(data.hand, teamType);
-renderPlayerBoard(data.boardState);
-renderEnemyHand(5, opponentTeam);
-renderDeckBackside(teamType);
+        const opponentTeam = teamType === 'infected' ? 'survivors' : 'infected';
+        renderPlayerHand(data.hand, teamType);
+        renderPlayerBoard(data.boardState);
+        renderEnemyHand(5, opponentTeam);
+        renderDeckBackside(teamType);
 
       } else {
         console.warn('[Client] Missing data from server:', data);

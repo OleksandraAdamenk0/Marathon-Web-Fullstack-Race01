@@ -94,6 +94,7 @@ class Room extends Model {
             "UPDATE rooms SET current_turn_player_id = ? WHERE id = ?",
             [playerId, roomId]
         );
+        console.log(`[RoomModel] Updated turn to player ${playerId} in room ${roomId}`);
     }
 
     async updateRoomStatus(roomId, status) {

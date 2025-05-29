@@ -21,6 +21,25 @@ class Card extends Model {
             throw error;
         }
     }
+    
+    async getByPlayerCardId(cardId, roomId, zone) {
+    const sql = `
+        SELECT pc.*, c.name, c.attack, c.defense, c.cost, c.card_type, c.description, c.image_url, c.team_type
+        FROM players_cards pc
+        JOIN cards c ON pc.card_id = c.id
+        WHERE pc.id = ? AND pc.room_id = ? AND pc.zone = ?
+        LIMIT 1
+    `;
+
+    try {
+        const results = await this.query(sql, [cardId, roomId, zone]);
+        return results[0] || null;
+    } catch (error) {
+        console.error('[Card Model] Error in getByPlayerCardId:', error);
+        throw error;
+    }
+}
+
 
     async getGuaranteedCards(teamType) {
         const guaranteedCardNames = teamType === 'survivors'

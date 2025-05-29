@@ -61,6 +61,7 @@ class TurnEngine {
             ? room.player_one_id
             : room.player_two_id;
 
+        console.log(`[TurnEngine] Setting next player ${nextPlayer} for room ${roomId}`);
         await roomModel.setTurnPlayer(roomId, nextPlayer);
 
         io.to(roomId).emit('turn-started', {
@@ -75,7 +76,27 @@ class TurnEngine {
 
         await roomModel.incrementTurn(roomId);
 
-        await this.startTurn(io, roomId);
+ 
+
+        const newTurn = await roomModel.getTurnNumber(roomId);
+        const room = await roomModel.getById(roomId);
+
+        console.log('[TurnEngine] room.player_two_id:', room.player_two_id);
+        const currentPlayer = room.current_turn_player_id;
+
+        const nextPlayer = currentPlayer === room.player_one_id
+        ? room.player_two_id
+        : room.player_one_id;
+
+        console.log(`[TurnEngine] Turn incremented. New turn = ${newTurn}`);
+        console.log('[TurnEngine] room.player_one_id:', room.player_one_id);
+        await roomModel.setTurnPlayer(roomId, nextPlayer);
+
+        io.to(roomId).emit('turn-started', {
+            roomId,
+            turnNumber: newTurn,
+            currentPlayer: nextPlayer
+        });
     }
 
     static async checkGameEnd(io, roomId) {
