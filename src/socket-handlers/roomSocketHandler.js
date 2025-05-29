@@ -1,5 +1,7 @@
 const RoomModel = require('../models/Room');
+const PlayerCardsModel = require('../models/PlayersCards');
 const roomModel = new RoomModel();
+const playerCardsModel = new PlayerCardsModel();
 
 const {
     getSocketId,
@@ -80,6 +82,10 @@ console.log(`[Server] Emitted room-update for room ${roomId}`);
             } else {
                 console.warn(`[RoomSocket] Opponent (${opponentUserId}) socket not found`);
             }
+        }
+        // tyt
+        if (roomId) {
+            console.log(await playerCardsModel.deleteAllByRoom(roomId));
         }
 
     }

@@ -312,6 +312,7 @@ class GameSocketHandler {
         });
 
         if (!result.ok) {
+            console.log("[GameSocket] Failed to play card': ", result.reason);
             sendMessageToUser(this.io, userId, 'turn-error', { reason: result.reason });
             return;
         }
