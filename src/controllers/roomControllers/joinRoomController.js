@@ -10,7 +10,12 @@ module.exports = async (req, res) => {
         if (await userModel.getById(userId) === null) return res.status(400).json({error: 'User not found'});
 
         const roomId = parseInt(req.params.roomId, 10);
-
+        console.log("in params: ", req.params);
+        console.log("after parseInt: ", roomId);
+        console.log("is roomId a number? ",
+            typeof roomId === 'number' && !isNaN(roomId)
+        )
+        console.log("is room id NaN? ", isNaN(roomId));
         const joinedRoom = await roomModel.getById(roomId);
         if (!joinedRoom) {
             return res.status(400).json({error: 'Failed to find room with given id'});
@@ -48,7 +53,7 @@ module.exports = async (req, res) => {
         res.redirect(`/room/${roomId}`);
 
     } catch (error) {
-        console.error['[JoinRoomController]', error];
+        console.log('[JoinRoomController] ', error);
         res.status(500).json({error: 'Failed to join room'});
     }
 }
