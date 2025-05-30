@@ -365,13 +365,28 @@ handSlot.appendChild(cardWrapper);
     
     let target = null;
 
+    let occupiedTroopSlots = [false, false, false, false, false]; // indexes 0–4
+
+    function findAvailableTroopSlot() {
+      for (let i = 0; i < 5; i++) {
+        const slot = document.getElementById(`player-troop${i + 1}`);
+        if (slot && slot.children.length === 0 && !occupiedTroopSlots[i]) {
+          occupiedTroopSlots[i] = true;
+          return slot;
+        }
+      }
+      return null;
+    }
+
+
     if (zoneType === 'leader') {
       target = document.querySelector('.leader');
     } else if (zoneType === 'farm') {
       target = document.querySelector('.farmers');
     } else if (zoneType === 'board') {
       const troopSlots = document.querySelectorAll('.player-troop');
-      target = [...troopSlots].find(slot => slot.children.length === 0);
+      target = findAvailableTroopSlot();
+
     }
 
     if (!target) {
