@@ -506,9 +506,9 @@ function renderPlayerBoard(boardState) {
       const slotId = isMine ? `player-troop${card.position || 1}` : `enemy-troop${card.position || 1}`;
       zone = document.getElementById(slotId);
     } else if (card.zone === 'farm') {
-      zone = isMine ? document.querySelector('.farmers') : null; // You can add enemy farmers if needed
+      zone = isMine ? document.querySelector('.farmers') : null;
     } else if (card.zone === 'leader') {
-      zone = isMine ? document.querySelector('leader') : null;
+      zone = isMine ? document.querySelector('.leader') : null;
     }
 
     if (!zone) return;
