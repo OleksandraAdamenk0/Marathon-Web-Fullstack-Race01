@@ -364,18 +364,17 @@ handSlot.appendChild(cardWrapper);
     
     let target = null;
 
-    let occupiedTroopSlots = [false, false, false, false, false]; // indexes 0–4
-
     function findAvailableTroopSlot() {
-      for (let i = 0; i < 5; i++) {
-        const slot = document.getElementById(`player-troop${i + 1}`);
-        if (slot && slot.children.length === 0 && !occupiedTroopSlots[i]) {
-          occupiedTroopSlots[i] = true;
+      for (let i = 1; i <= 5; i++) {
+        const slot = document.getElementById(`player-troop${i}`);
+        if (slot && slot.children.length === 0) {
           return slot;
         }
       }
       return null;
     }
+    
+    let position = null;
 
 
     if (zoneType === 'leader') {
@@ -383,10 +382,16 @@ handSlot.appendChild(cardWrapper);
     } else if (zoneType === 'farm') {
       target = document.querySelector('.farmers');
     } else if (zoneType === 'board') {
-      const troopSlots = document.querySelectorAll('.player-troop');
-      target = findAvailableTroopSlot();
-
+      const slot = findAvailableTroopSlot();
+      if (slot) {
+        const match = slot.id.match(/player-troop(\d+)/);
+        if (match) {
+          position = parseInt(match[1]);
+        }
+        target = slot;
+      }
     }
+    
 
     if (!target) {
       console.warn('[PlayCard] No target found for zone:', zoneType);
@@ -402,9 +407,11 @@ handSlot.appendChild(cardWrapper);
       userId: window.USER_ID,
       data: {
         cardId: finalCard.dataset.playerCardId,
-        destination: zoneType
+        destination: zoneType,
+        position: position
       }
     });
+    
     handSlot.innerHTML = '';
   });
 }
