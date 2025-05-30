@@ -27,13 +27,22 @@
     <div class="player-name" title="<%= player.username %>">
     <%= player.username.slice(0, 14) %><%= player.username.length > 14 ? '...' : '' %>
     </div>
-
-    <!--                of the player login (show the rest on hover)-->
+    <div class="stat-bars">
+        <div class="stat-bar">
+          <label>HP</label>
+          <span id="player-hp-value"><%= player.health %>/10</span>
+        </div>
+      
+        <div class="stat-bar">
+          <label>Energy</label>
+          <span id="player-energy-value"><%= player.energy %>/10</span>
+        </div>
+      </div>
+      
+      
 </div>
 
 <div class="container">
-
-
 
     <div class="game-field">
         <div class="enemy-row">
@@ -46,6 +55,12 @@
                     <div class="player-name" title="<%= opponent.username %>">
                       <%= opponent.username.slice(0, 14) %><%= opponent.username.length > 14 ? '...' : '' %>
                     </div>
+                    <div class="stat-bars">
+                        <div class="stat-bar">
+                          <label>HP</label>
+                          <span id="enemy-hp-value"><%= opponent?.health %>/10</span>
+                        </div>
+                      </div>                      
                   <% } else { %>
                     <img src="/uploads/avatars/default.png" alt="avatar" class="avatar" title="Waiting for opponent...">
                     <div class="player-name" title="Waiting for opponent...">Waiting...</div>

@@ -3,6 +3,7 @@ const Room  = new roomModel();
 const userModel = require('../../models/User');
 const User = new userModel();
 
+
 module.exports = async (req, res) => {
     const roomId = req.params.roomId;
     const userId = req.user.id;

@@ -35,12 +35,15 @@ socket.on('role-assigned', (data) => {
 
 socket.on('game-already-started', (data) => {
   console.log('[Client] Game already started:', data);
-  if (!data.role || !data.opponent) {
-    console.warn('Missing data keys:', data);
-  } else {
-    window.PLAYER_TEAM_TYPE = data.role;
-  }
+  const { role, health, energy, opponent, currentTurn } = data;
+
+  window.PLAYER_TEAM_TYPE = role;
+  window.CURRENT_TURN_PLAYER = currentTurn;
+
+  renderPlayerStats(health, energy);
+  renderOpponentStats(opponent);
 });
+
 
 socket.on('deck-built', ({ hand, deckStats, teamType }) => {
     console.log('[Deck Built]', hand, deckStats, teamType);
@@ -137,6 +140,45 @@ socket.on('room-update', async ({ roomId }) => {
 
   });
   
+  function renderPlayerStats(health, energy) {
+    const hpValue = document.getElementById('player-hp-value');
+    const energyValue = document.getElementById('player-energy-value');
+  
+    if (hpValue) {
+      hpValue.textContent = `${health}/10`;
+    }
+  
+    if (energyValue) {
+      energyValue.textContent = `${energy}/10`;
+    }
+  }
+
+  function renderOpponentStats(opponent) {
+    if (!opponent) return;
+  
+    const enemyInfo = document.querySelector('.enemy-info');
+    if (!enemyInfo) return;
+  
+    const avatarImg = enemyInfo.querySelector('img.avatar');
+    const nameDiv = enemyInfo.querySelector('.player-name');
+    const hpSpan = enemyInfo.querySelector('#enemy-hp-value');
+  
+    if (avatarImg) {
+      avatarImg.src = `/${opponent.avatar_url}`;
+      avatarImg.title = `Health: ${opponent.health || 10}`;
+    }
+  
+    if (nameDiv) {
+      nameDiv.textContent = opponent.username.length > 14
+        ? opponent.username.slice(0, 14) + '...'
+        : opponent.username;
+      nameDiv.title = opponent.username;
+    }
+  
+    if (hpSpan) {
+      hpSpan.textContent = `${opponent.health || 10}/10`;
+    }
+  }
   
 
   function renderPlayerHand(hand, teamType) {

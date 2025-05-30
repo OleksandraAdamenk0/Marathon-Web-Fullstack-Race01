@@ -43,13 +43,24 @@ class GameSocketHandler {
             sendMessageToUser(this.io, userId, 'game-already-started', {
                 role: existing.role,
                 opponent: opponent,
-                currentTurn: room.current_turn_player_id
+                currentTurn: room.current_turn_player_id,
+                health: existing.health,
+                energy: existing.energy
             });
             return;
         }
 
         const assigned = await Player.defineRole(roomId, userId, Room);
-        sendMessageToUser(this.io, userId, 'role-assigned', { role: assigned });
+        const player = await Player.getPlayerByUserAndRoom(userId, roomId);
+        const opponent = await Player.getOpponent(roomId, userId);
+
+        sendMessageToUser(this.io, userId, 'game-already-started', {
+            role: assigned,
+            health: player.health,
+            energy: player.energy,
+            currentTurn: room.current_turn_player_id,
+            opponent: opponent
+        });
 
         const players = await Player.getPlayersByRoomId(roomId);
         console.log(players);
@@ -61,7 +72,9 @@ class GameSocketHandler {
                 opponent: {
                     userId: p2.user_id,
                     username: p2.username,
-                    role: p2.role
+                    role: p2.role,
+                    health: p2.health,
+                    energy: p2.energy
                 }
             });
 
@@ -69,7 +82,9 @@ class GameSocketHandler {
                 opponent: {
                     userId: p1.user_id,
                     username: p1.username,
-                    role: p1.role
+                    role: p1.role,
+                    health: p1.health,
+                    energy: p1.energy
                 }
             });
 

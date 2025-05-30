@@ -14,12 +14,16 @@ class Player extends Model {
     }
 
     async getPlayerByUserAndRoom(userId, roomId) {
-        const result = await this.query(
-            `SELECT * FROM players WHERE user_id = ? AND room_id = ? LIMIT 1;`,
-            [userId, roomId]
-        );
-        return result[0] || null;
-    }
+    const result = await this.query(
+        `SELECT players.*, users.username, users.avatar_url
+         FROM players
+         JOIN users ON players.user_id = users.id
+         WHERE players.user_id = ? AND players.room_id = ? LIMIT 1;`,
+        [userId, roomId]
+    );
+    return result[0] || null;
+}
+
 
     async getPlayersByRoomId(roomId) {
         return this.query(
@@ -43,12 +47,14 @@ class Player extends Model {
 
 	async getOpponent(roomId, userId) {
 	    const result = await this.query(
-		`SELECT * FROM players WHERE room_id = ? AND user_id != ? LIMIT 1;`,
+		`SELECT players.*, users.username, users.avatar_url
+		 FROM players
+		 JOIN users ON players.user_id = users.id
+		 WHERE players.room_id = ? AND players.user_id != ? LIMIT 1;`,
 		[roomId, userId]
 	    );
 	    return result[0] || null;
 	}
-
 
     async areBothPlayersAssigned(roomId) {
         const players = await this.getPlayersByRoomId(roomId);

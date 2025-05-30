@@ -32,6 +32,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    z-index: 999;
 }
 
 .avatar {
@@ -295,6 +296,46 @@ body {
     max-height: 100%;
     max-width: 100%;
 }
+
+/*player stats*/
+.stat-bars {
+    display: flex;
+    gap: 20px; /* space between bars */
+    align-items: flex-end;
+    margin-top: 10px;
+  }
+  
+  .stat-bar {
+    min-width: 100px;
+    font-family: sans-serif;
+    font-size: 14px;
+    color: white;
+  }
+  
+  .stat-bar label {
+    font-weight: bold;
+    margin-bottom: 2px;
+    display: inline-block;
+  }
+  
+    #player-energy-value {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #8a7d35;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+  }
+  
+    #enemy-hp-value, #player-hp-value {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #721726;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+  }
+  
 
 /*deck column*/
 
