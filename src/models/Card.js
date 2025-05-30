@@ -95,10 +95,9 @@ const cardCountMap = {};
                 console.log(`[Card Model] Successfully built deck with ${cardInstances.length} cards`);
 
                 await this.shuffleDeck(playerId, roomId);
-                await this.drawStartingHand(playerId, roomId, HANDSIZE);
-
                 await this.addGuaranteedCardsToHand(playerId, roomId, guaranteedCards);
-
+                await this.drawStartingHand(playerId, roomId, HANDSIZE);
+                
                 return true;
             }
 

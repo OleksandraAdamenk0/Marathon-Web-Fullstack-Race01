@@ -88,11 +88,6 @@ socket.on('room-update', async ({ roomId }) => {
       const response = await fetch(`/api/room/${roomId}`);
       const roomData = await response.json();
       console.log('[Room UI] Room data fetched:', roomData);
-      const p1 = document.getElementById('player1-name');
-      const p2 = document.getElementById('player2-name');
-  
-      if (p1) p1.textContent = roomData.player1?.username || 'Waiting...';
-      if (p2) p2.textContent = roomData.player2?.username || 'Waiting...';
   
       const isPlayer1 = roomData.player1?.id?.toString() === window.USER_ID?.toString();
       const bothPlayersPresent = roomData.player1 && roomData.player2;
