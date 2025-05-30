@@ -57,7 +57,7 @@ async function reloadRooms(overlay) {
           <td>
             <form action="/api/room/join/${room.id}" method="POST">
               <input type="hidden" name="code" value="00005">
-              <button class="join-button" type="submit" ${isFull ? 'disabled' : ''}>Join</button>
+              <button class="join-button" data-roomId="${room.id}" data-isPrivat="false" type="submit" ${isFull ? 'disabled' : ''}>Join</button>
             </form>
           </td>
         `;
@@ -67,8 +67,8 @@ async function reloadRooms(overlay) {
     document.querySelectorAll('.join-button').forEach(button => {
       button.addEventListener('click', async (e) => {
         e.preventDefault();
-        const roomId = button.dataset.roomId;
-        const isPrivate = button.dataset.isPrivate === 'true';
+        const roomId = button.dataset.roomid;
+        const isPrivate = button.dataset.isprivate === 'true';
 
         if (isPrivate) {
           const modal = document.getElementById('enter-password');
