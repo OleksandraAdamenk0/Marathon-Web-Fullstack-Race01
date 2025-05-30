@@ -83,9 +83,6 @@ startTurnTimer(() => {
 socket.on('player-joined', async ({ user, socketId }) => {
   console.log('[Client] player-joined received:', user.username, socketId);
 
-  const p1 = document.getElementById('player1-name');
-  const p2 = document.getElementById('player2-name');
-
   if (p1 && !p1.textContent.includes(user.username)) {
     p1.textContent = user.username;
   } else if (p2 && !p2.textContent.includes(user.username)) {
@@ -225,8 +222,10 @@ socket.on('room-update', async ({ roomId }) => {
     if (!Array.isArray(hand)) return console.error('[Render] Expected hand to be an array');
   
     const placeholder = playerRow.querySelector('.placeholder');
-    playerRow.innerHTML = '';
-    if (placeholder) playerRow.appendChild(placeholder);
+    playerRow.querySelectorAll('.player-hand').forEach(el => el.remove());
+    if (placeholder && !playerRow.contains(placeholder)) {
+      playerRow.appendChild(placeholder);
+    }
   
     hand.forEach((card, index) => {
       const handSlot = document.createElement('div');
@@ -363,10 +362,6 @@ handSlot.appendChild(cardWrapper);
       console.warn('[PlayCard] Unknown card type:', cardType);
       return;
     }
-
-    const farmersContainer = document.querySelector('.farmers');
-
-
     
     let target = null;
 
@@ -396,10 +391,6 @@ handSlot.appendChild(cardWrapper);
         destination: zoneType
       }
     });
-
-
-    target.innerHTML = '';
-    target.appendChild(cardWrapper);
 
   });
 }
@@ -485,40 +476,64 @@ function renderDeckBackside(teamType = 'survivors') {
 }
 
 function renderPlayerBoard(boardState) {
-    // Clear all board/farm/leader slots
-    document.querySelectorAll('.player-troop, .player-farmer, .player-leader').forEach(zone => {
-      zone.innerHTML = '';
-    });
-  
-    // Group cards by zone
-    boardState.forEach(card => {
-      if (card.zone !== 'board' && card.zone !== 'farm' && card.zone !== 'leader') return;
-  
-      const img = document.createElement('img');
-      img.src = card.image_url.startsWith('/')
-        ? card.image_url
-        : `/images/cards/${card.team_type}/${card.image_url}`;
-      img.alt = card.name;
-      img.title = card.description;
-      img.className = `card player-${card.zone}-card`;
-  
-      // Find target zone
-      let zone;
-      if (card.zone === 'board') {
-        const slotId = `player-troop${card.position || 1}`; // fallback position
-        zone = document.getElementById(slotId);
-      } else if (card.zone === 'farm') {
-        zone = document.querySelector('.player-farmer'); // or use position logic
-      } else if (card.zone === 'leader') {
-        zone = document.querySelector('.player-leader');
-      }
-  
-      if (zone) {
-        zone.innerHTML = ''; // clear old content
-        zone.appendChild(img);
-      }
-    });
-  }
+  document.querySelectorAll('.player-troop, .farmers, .leader').forEach(zone => {
+    zone.innerHTML = '';
+  });
+
+  boardState.forEach(card => {
+    if (!['board', 'farm', 'leader'].includes(card.zone)) return;
+
+    const zone =
+      card.zone === 'board'
+        ? document.getElementById(`player-troop${card.position || 1}`)
+        : card.zone === 'farm'
+        ? document.querySelector('.farmers')
+        : document.querySelector('.leader');
+
+    if (!zone) return;
+
+    // Build wrapped card with overlay
+    const cardWrapper = document.createElement('div');
+    cardWrapper.className = 'card-wrapper';
+
+    const img = document.createElement('img');
+    img.src = card.image_url.startsWith('/')
+      ? card.image_url
+      : `/images/cards/${card.team_type}/${card.image_url}`;
+    img.alt = card.name;
+    img.title = card.description;
+    img.className = `card player-${card.zone}-card`;
+    img.dataset.cardId = card.cardId;
+    img.dataset.cardType = card.card_type;
+
+    cardWrapper.appendChild(img);
+
+    const costText = document.createElement('div');
+    costText.className = 'card-cost';
+    costText.textContent = card.cost;
+    cardWrapper.appendChild(costText);
+
+    const attackText = document.createElement('div');
+    attackText.className = 'card-attack';
+    attackText.textContent = card.attack;
+    cardWrapper.appendChild(attackText);
+
+    const defenseText = document.createElement('div');
+    defenseText.className = 'card-defense';
+    defenseText.textContent = card.defense;
+    cardWrapper.appendChild(defenseText);
+
+    const icon = document.createElement('img');
+    icon.src = `/images/cards/icons.png`;
+    icon.alt = 'card icon';
+    icon.className = 'card-icon-overlay';
+    cardWrapper.appendChild(icon);
+
+    zone.innerHTML = '';
+    zone.appendChild(cardWrapper);
+  });
+}
+
   
   async function fetchAndRenderGameState(roomId) {
     console.log('[Reload] Starting fetchAndRenderGameState()');
@@ -555,25 +570,32 @@ function renderPlayerBoard(boardState) {
     }
   }
 
-    // Server responses
-    window.socket.on('hand-update', ({ hand }) => {
-      console.log('[Client] Hand updated');
-      renderPlayerHand(hand, teamType); // Make sure this is imported
-    });
+  let lastHandSnapshot = [];
+
+  window.socket.on('hand-update', ({ hand }) => {
+    const teamType = window.PLAYER_TEAM_TYPE || 'survivors';
+  
+    // Skip if hand is same as last render
+    const handIds = hand.map(c => c.id).join(',');
+    const lastIds = lastHandSnapshot.map(c => c.id).join(',');
+    if (handIds === lastIds) {
+      console.log('[Client] Hand unchanged, skipping render.');
+      return;
+    }
+  
+    lastHandSnapshot = hand; // Update snapshot
+    console.log('[Client] Hand updated');
+    renderPlayerHand(hand, teamType);
+  });
+  
   
     window.socket.on('board-update', ({ board }) => {
       console.log('[Client] Board updated');
-      ///renderPlayerBoard(board); // You need to implement this if not yet
+      renderPlayerBoard(board);
     });
   
     window.socket.on('turn-error', ({ reason }) => {
       alert(`Card move failed: ${reason}`);
     });
-  
-  function getZoneFromElement(el) {
-    if (el.classList.contains('player-troop')) return 'board';
-    if (el.classList.contains('player-farmer')) return 'farm';
-    if (el.classList.contains('player-leader')) return 'leader';
-    return null;
-  }
+
   
