@@ -80,26 +80,6 @@ startTurnTimer(() => {
 });
 });
 
-socket.on('player-joined', async ({ user, socketId }) => {
-  console.log('[Client] player-joined received:', user.username, socketId);
-
-  const p1 = document.getElementById('player1-name');
-  const p2 = document.getElementById('player2-name');
-
-  if (p1 && !p1.textContent.includes(user.username)) {
-    p1.textContent = user.username;
-  } else if (p2 && !p2.textContent.includes(user.username)) {
-    p2.textContent = user.username;
-  }
-
-  const reloaded = sessionStorage.getItem('alreadyReloaded') === 'true';
-  if (!reloaded) {
-    console.log('[Client] First join detected, reloading...');
-    sessionStorage.setItem('alreadyReloaded', 'true');
-    window.location.reload();
-  }
-});
-
 
 socket.on('room-update', async ({ roomId }) => {
     if (!window.ROOM_ID || window.ROOM_ID !== roomId.toString()) return;

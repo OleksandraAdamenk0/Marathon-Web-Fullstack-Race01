@@ -14,6 +14,14 @@
     <script type="module" src="/js/sessionSocket.js"></script>
     <script type="module" src="/js/reload.js"></script>
     <script src="/js/privateRoomHandler.js"></script>
+    <script type="module">
+        import { initPublicQuickJoin } from '/js/publicRoomHandler.js';
+        const socket = io();
+        socket.on('connect', () => {
+            initPublicQuickJoin(socket);
+        });
+    </script>
+
 </head>
 <body>
   <div class="main-bg">
