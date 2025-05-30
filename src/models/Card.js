@@ -1,5 +1,5 @@
 const Model = require('./Model');
-const HANDSIZE = 5;
+const HANDSIZE = 3;
 
 class Card extends Model {
     constructor() {
@@ -95,7 +95,7 @@ const cardCountMap = {};
                 console.log(`[Card Model] Successfully built deck with ${cardInstances.length} cards`);
 
                 await this.shuffleDeck(playerId, roomId);
-                await this.drawStartingHand(playerId, roomId, HANDSIZE - guaranteedCards.length);
+                await this.drawStartingHand(playerId, roomId, HANDSIZE);
 
                 await this.addGuaranteedCardsToHand(playerId, roomId, guaranteedCards);
 
