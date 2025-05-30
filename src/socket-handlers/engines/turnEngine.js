@@ -133,6 +133,17 @@ class TurnEngine {
         if (!pcard) return { ok: false, reason: 'Card not in hand' };
         console.log('pcard', JSON.stringify(pcard));
 
+        let position = null;
+        if (destination === 'board') {
+            const existing = await playersCards.getBoardForPlayer(pcard.player_id, roomId);
+            if (existing.length) {
+                const maxPos = Math.max(...existing.map(r => r.position || 0));
+                position = maxPos + 1;
+            } else {
+                position = 1;
+            }
+        }
+
         if (player.energy < pcard.cost) return {ok: false, reason: 'Not enough energy'};
 
         if (!TurnValidation.isDestinationValid(pcard.card_type, destination)) {
@@ -142,7 +153,7 @@ class TurnEngine {
             return {ok: false, reason: 'Energy farmer can only be played once every turn'};
         }
 
-        await playersCards.moveCard(pcard.id, destination);
+        await playersCards.moveCard(pcard.id, destination, position);
         await playerModel.updateEnergyByPlayerId(player.id, -pcard.cost);
 
         const hand = await playersCards.getHand(player.id, roomId);

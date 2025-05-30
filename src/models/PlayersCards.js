@@ -29,6 +29,18 @@ class PlayersCardsModel extends Model {
         return this.query(sql, [newZone, position, playerCardId]);
     }
 
+    async getBoardForPlayer(playerId, roomId) {
+        return this.query(
+            `SELECT position
+     FROM players_cards
+     WHERE player_id = ?
+       AND room_id   = ?
+       AND zone = 'board'`,
+            [playerId, roomId]
+        );
+    }
+
+
 
     async moveFromDeckToHand(playerId, roomId, cardId, instanceNumber, position = null) {
         return this.moveCard(playerId, roomId, cardId, instanceNumber, 'hand', position);
