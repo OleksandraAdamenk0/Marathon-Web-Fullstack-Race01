@@ -48,46 +48,50 @@ console.log(`[Server] Emitted room-update for room ${roomId}`);
     }
 
     async handleLeaveRoom({ roomId }) {
-        const user = this.socket.user;
+        try {
+            const user = this.socket.user;
 
-        this.socket.leave(roomId);
-        console.log(`[RoomSocket] ${user?.username || 'Unknown'} (${this.socket.id}) left room ${roomId}`);
+            this.socket.leave(roomId);
+            console.log(`[RoomSocket] ${user?.username || 'Unknown'} (${this.socket.id}) left room ${roomId}`);
 
-        this.socket.to(roomId).emit('player-left', {
-            user,
-            socketId: this.socket.id,
-        });
+            this.socket.to(roomId).emit('player-left', {
+                user,
+                socketId: this.socket.id,
+            });
 
-        const room = await roomModel.getById(roomId);
+            const room = await roomModel.getById(roomId);
 
-        const opponentUserId = room.player_one_id.toString() === user.id
-            ? room.player_two_id
-            : room.player_one_id;
+            const opponentUserId = room.player_one_id.toString() === user.id
+                ? room.player_two_id
+                : room.player_one_id;
 
-        if (opponentUserId) {
-            await roomModel.setWinner(roomId, opponentUserId);
-            await roomModel.setFinishedStatus(roomId);
+            if (opponentUserId) {
+                await roomModel.setWinner(roomId, opponentUserId);
+                await roomModel.setFinishedStatus(roomId);
 
-            const opponentSocketId = getSocketId(opponentUserId);
+                const opponentSocketId = getSocketId(opponentUserId);
 
-            if (opponentSocketId) {
-                this.io.to(opponentSocketId).emit('game-ended', {
-                    roomId,
-                    winner: opponentUserId,
-                    loser: user.id
-                });
+                if (opponentSocketId) {
+                    this.io.to(opponentSocketId).emit('game-ended', {
+                        roomId,
+                        winner: opponentUserId,
+                        loser: user.id
+                    });
 
-                this.io.to(opponentSocketId).emit('redirect-to-menu', { roomId });
-                console.log(`[RoomSocket] Notified opponent (${opponentUserId}) that game ended`);
-            } else {
-                console.warn(`[RoomSocket] Opponent (${opponentUserId}) socket not found`);
+                    this.io.to(opponentSocketId).emit('redirect-to-menu', {roomId});
+                    console.log(`[RoomSocket] Notified opponent (${opponentUserId}) that game ended`);
+                } else {
+                    console.warn(`[RoomSocket] Opponent (${opponentUserId}) socket not found`);
+                }
+            }
+            // tyt
+            if (roomId) {
+                console.log(await playerCardsModel.deleteAllByRoom(roomId));
             }
         }
-        // tyt
-        if (roomId) {
-            console.log(await playerCardsModel.deleteAllByRoom(roomId));
+        catch (err) {
+            console.error('[RoomSocket] Failed to leave room:', err);
         }
-
     }
 
     async utilReadyToStart(roomId) {

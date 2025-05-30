@@ -129,40 +129,37 @@ class TurnEngine {
 
         const player = await playerModel.getPlayersByRoomId(userId, roomId);
 
+        const pcard = await playersCards.getByPlayerCardId(cardId, roomId, 'hand');
+        if (!pcard) return { ok: false, reason: 'Card not in hand' };
+        console.log('pcard', JSON.stringify(pcard));
 
+        if (player.energy < pcard.cost) return {ok: false, reason: 'Not enough energy'};
 
-        const pc = await playersCards.getByPlayerCardId(cardId, roomId, 'hand');
-        const card = pc;
-
-        if (!pc) return {ok: false, reason: 'Card not in hand'};
-
-        if (player.energy < card.cost) return {ok: false, reason: 'Not enough energy'};
-
-        if (!TurnValidation.isDestinationValid(card.card_type, destination)) {
+        if (!TurnValidation.isDestinationValid(pcard.card_type, destination)) {
             return { ok: false, reason: 'Invalid destination for this card type' };
         }
-        if(!await TurnValidation.canPlayEnergyFarmerToFarm(card.card_type, destination, roomId, userId, room.turn_number)) {
+        if(!await TurnValidation.canPlayEnergyFarmerToFarm(pcard.card_type, destination, roomId, userId, room.turn_number)) {
             return {ok: false, reason: 'Energy farmer can only be played once every turn'};
         }
 
-        await playersCards.moveCard(player.id, roomId, cardId, destination);
-        await playerModel.updateEnergyByPlayerId(player.id, -card.cost);
+        await playersCards.moveCard(pcard.id, destination);
+        await playerModel.updateEnergyByPlayerId(player.id, -pcard.cost);
 
         const hand = await playersCards.getHand(player.id, roomId);
         const board = await playersCards.getBoardState(roomId);
 
 
-        await battleLogsModel.writeLog({
-            user_id: userId,
-            room_id: roomId,
-            turn_number: room.turn_number,
-            log: JSON.stringify({
+        await battleLogsModel.writeLog(
+            userId,
+            roomId,
+            room.turn_number,
+            JSON.stringify({
                 playerId: player.id,
                 action: 'play-card',
-                card: card,
+                card: pcard.name,
                 destination: destination,
             })
-        });
+    );
 
         return {ok: true, hand, boardState: board};
     }

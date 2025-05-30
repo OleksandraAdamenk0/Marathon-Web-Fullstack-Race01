@@ -6,7 +6,7 @@ class BattleLog extends Model {
     }
 
     async writeLog(userId, roomId, turn_number,log) {
-        return await this.query("INSERT INTO battle_logs(room_id, user_id, turn_number, action)  VALUES(?, ?, ?)", [roomId, userId, log]);
+        return await this.query("INSERT INTO battle_logs(room_id, user_id, turn_number, action)  VALUES(?, ?, ?, ?)", [roomId, userId, turn_number,log]);
     }
 
     async getLogsByRoom(roomId) {

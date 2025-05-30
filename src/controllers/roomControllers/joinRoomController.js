@@ -32,7 +32,9 @@ module.exports = async (req, res) => {
             }
         }
 
-        if (userId === joinedRoom.player_one_id || userId === joinedRoom.player_two_id) {
+        const opponentId = joinedRoom.player_one_id;
+
+        if (userId === joinedRoom.player_two_id || userId === joinedRoom.player_one_id) {
             return res.redirect(`/room/${roomId}`);
         }
 

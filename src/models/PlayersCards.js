@@ -19,16 +19,16 @@ class PlayersCardsModel extends Model {
         return this.addCard(playerId, roomId, cardId, 'leader', null, false, instanceNumber);
     }
 
-    async moveCard(playerId, roomId, cardId, instanceNumber, newZone, position = null) {
-        const sql = `UPDATE players_cards
-                     SET zone     = ?,
-                         position = ?
-                     WHERE player_id = ?
-                       AND room_id = ?
-                       AND card_id = ?
-                       AND instance_number = ?`;
-        return this.query(sql, [newZone, position, playerId, roomId, cardId, instanceNumber]);
+    async moveCard(playerCardId, newZone, position = null) {
+        const sql = `
+            UPDATE players_cards
+            SET zone = ?,
+                position = ?
+            WHERE id = ?
+        `;
+        return this.query(sql, [newZone, position, playerCardId]);
     }
+
 
     async moveFromDeckToHand(playerId, roomId, cardId, instanceNumber, position = null) {
         return this.moveCard(playerId, roomId, cardId, instanceNumber, 'hand', position);
@@ -63,29 +63,26 @@ class PlayersCardsModel extends Model {
         return this.query(sql, [playerId, roomId]);
     }
 
-	async getByPlayerCardId(playerCardId, roomId, zone) {
-	    const sql = `
-		SELECT pc.*, c.name, c.attack, c.defense, c.cost, c.card_type, c.description, c.image_url, c.team_type
-		FROM players_cards pc
-		JOIN cards c ON pc.card_id = c.id
-		WHERE pc.id = ? AND pc.room_id = ? AND pc.zone = ?
-		LIMIT 1
-	    `;
+    async getByPlayerCardId(playerCardId, roomId, zone) {
+        const sql = `
+        SELECT pc.*, c.name, c.image_url, c.attack, c.defense, c.cost, c.card_type
+        FROM players_cards pc
+        JOIN cards c ON pc.card_id = c.id
+        WHERE pc.id = ?
+          AND pc.room_id = ?
+          AND pc.zone = ?
+        LIMIT 1
+    `;
+        const [result] = await this.query(sql, [playerCardId, roomId, zone]);
+        return result;
+    }
 
-	    try {
-		const results = await this.query(sql, [playerCardId, roomId, zone]);
-		return results[0] || null;
-	    } catch (error) {
-		console.error('[Card Model] Error in getByPlayerCardId:', error);
-		throw error;
-	    }
-	}
 
     async getSpecific(playerId, roomId, cardId, zone, instanceNumber = null) {
         let sql = `SELECT * FROM players_cards
                     WHERE id = ?
                     AND room_id = ?
-                    AND zone = 'hand'
+                    AND zone = ?
 `;
         let params = [playerId, roomId, cardId, zone];
 
