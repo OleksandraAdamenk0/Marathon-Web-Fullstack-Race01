@@ -97,7 +97,6 @@ socket.on('player-joined', async ({ user, socketId }) => {
   }
 });
 
-
 socket.on('room-update', async ({ roomId }) => {
     if (!window.ROOM_ID || window.ROOM_ID !== roomId.toString()) return;
 
