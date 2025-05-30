@@ -44,7 +44,6 @@ body {
  }
 
  .card.player-hand-card {
-    border: 2px dashed red;
     z-index: 2000;
   }
 /* me as a player */
@@ -234,6 +233,25 @@ body {
 #turn-indicator {
     width: 64px;
     height: auto;
+}
+
+#end-turn-button {
+    background: #e7e6e6;
+    border: none;
+    border-radius: 30px;
+    padding: 0.6em 1.7em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 0.9em;
+    margin-top: 1em;
+    margin-right: 0.5em;
+    position: relative;
+    z-index: 3;
+}
+  
+#end-turn-button:hover {
+    background: #fff;
 }
 
 .player-farmer {

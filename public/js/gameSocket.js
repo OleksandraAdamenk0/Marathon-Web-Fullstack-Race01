@@ -133,6 +133,29 @@ socket.on('room-update', async ({ roomId }) => {
       }
     });
 
+      const endTurnBtn = document.getElementById('end-turn-button');
+  if (endTurnBtn) {
+    endTurnBtn.addEventListener('click', () => {
+      if (!window.IS_MY_TURN) {
+        console.warn('[End Turn] Not your turn!');
+        return;
+      }
+
+      console.log('[End Turn] Button clicked. Emitting end-turn with:', {
+        roomId: window.ROOM_ID,
+        userId: window.USER_ID
+      });
+
+      socket.emit('end-turn', {
+        roomId: window.ROOM_ID,
+        userId: window.USER_ID
+      });
+
+      stopTurnTimer();
+    });
+}
+
+
   });
   
   function renderPlayerStats(health, energy) {
@@ -301,7 +324,7 @@ icon.className = 'card-icon-overlay';
 
 cardWrapper.appendChild(icon);
 handSlot.appendChild(cardWrapper);
-if (window.IS_MY_TURN) {
+
   finalCard.addEventListener('click', () => {
 
     if (!window.IS_MY_TURN) {
@@ -361,7 +384,7 @@ if (window.IS_MY_TURN) {
   });
 }
 
-      }
+
       
     });
   
