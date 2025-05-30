@@ -405,7 +405,7 @@ handSlot.appendChild(cardWrapper);
         destination: zoneType
       }
     });
-
+    handSlot.innerHTML = '';
   });
 }
 
