@@ -490,23 +490,30 @@ function renderDeckBackside(teamType = 'survivors') {
 }
 
 function renderPlayerBoard(boardState) {
-  document.querySelectorAll('.player-troop, .farmers, .leader').forEach(zone => {
+  document.querySelectorAll('.player-troop, .enemy-troop, .farmers, .leader').forEach(zone => {
     zone.innerHTML = '';
   });
+
+  const myId = window.USER_ID?.toString();
 
   boardState.forEach(card => {
     if (!['board', 'farm', 'leader'].includes(card.zone)) return;
 
-    const zone =
-      card.zone === 'board'
-        ? document.getElementById(`player-troop${card.position || 1}`)
-        : card.zone === 'farm'
-        ? document.querySelector('.farmers')
-        : document.querySelector('.leader');
+    const isMine = card.user_id?.toString() === myId;
+    let zone;
+
+    if (card.zone === 'board') {
+      const slotId = isMine ? `player-troop${card.position || 1}` : `enemy-troop${card.position || 1}`;
+      zone = document.getElementById(slotId);
+    } else if (card.zone === 'farm') {
+      zone = isMine ? document.querySelector('.farmers') : null; // You can add enemy farmers if needed
+    } else if (card.zone === 'leader') {
+      zone = isMine ? document.querySelector('leader') : null;
+    }
 
     if (!zone) return;
 
-    // Build wrapped card with overlay
+    // Create card wrapper and content like before
     const cardWrapper = document.createElement('div');
     cardWrapper.className = 'card-wrapper';
 
@@ -516,7 +523,7 @@ function renderPlayerBoard(boardState) {
       : `/images/cards/${card.team_type}/${card.image_url}`;
     img.alt = card.name;
     img.title = card.description;
-    img.className = `card player-${card.zone}-card`;
+    img.className = `card ${isMine ? 'player-' : 'enemy-'}${card.zone}-card`;
     img.dataset.cardId = card.cardId;
     img.dataset.cardType = card.card_type;
 
@@ -547,6 +554,7 @@ function renderPlayerBoard(boardState) {
     zone.appendChild(cardWrapper);
   });
 }
+
 
   
   async function fetchAndRenderGameState(roomId) {
