@@ -627,4 +627,10 @@ function renderPlayerBoard(boardState) {
       alert(`Card move failed: ${reason}`);
     });
 
+    window.socket.on('energy-update', ({ energy }) => {
+      console.log('[Client] Energy updated new energy:', energy);
+      const el = document.getElementById('player-energy-value');
+      if (el) el.textContent = `${energy}/10`;
+    });
+
   

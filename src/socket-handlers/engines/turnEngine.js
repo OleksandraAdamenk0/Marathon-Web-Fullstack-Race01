@@ -143,7 +143,7 @@ class TurnEngine {
         const room = await roomModel.getById(roomId);
         if (!room) return {ok: false, reason: 'Room not found'};
 
-        const player = await playerModel.getPlayersByRoomId(userId, roomId);
+        const player = await playerModel.getPlayerByUserAndRoom(userId, roomId);
 
         const pcard = await playersCards.getByPlayerCardId(cardId, roomId, 'hand');
         if (!pcard) return { ok: false, reason: 'Card not in hand' };
@@ -161,7 +161,6 @@ class TurnEngine {
         }
 
         if (player.energy < pcard.cost) return {ok: false, reason: 'Not enough energy'};
-
         if (!TurnValidation.isDestinationValid(pcard.card_type, destination)) {
             return { ok: false, reason: 'Invalid destination for this card type' };
         }
@@ -176,6 +175,10 @@ class TurnEngine {
         const board = await playersCards.getBoardState(roomId);
 
 
+        const freshPlayer = await playerModel.getById(player.id);
+        const newEnergy = freshPlayer.energy;
+
+        console.log('New playerId and energy', freshPlayer.id, freshPlayer.energy);
         await battleLogsModel.writeLog(
             userId,
             roomId,
@@ -188,7 +191,7 @@ class TurnEngine {
             })
     );
 
-        return {ok: true, hand, boardState: board};
+        return {ok: true, hand, boardState: board, energy: newEnergy};
     }
 
     static async getBuffsForPlayer(roomId, playerId, isAttacker) {

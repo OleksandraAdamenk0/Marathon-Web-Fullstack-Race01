@@ -332,6 +332,7 @@ class GameSocketHandler {
             return;
         }
 
+        sendMessageToUser(this.io, userId, 'energy-update', { energy: result.energy });
         sendMessageToUser(this.io, userId, 'hand-update', { hand: result.hand });
         await sendMessageToRoom(this.io, roomId, 'board-update', { board: result.boardState });
     }
