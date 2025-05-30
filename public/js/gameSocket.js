@@ -308,6 +308,11 @@ cardWrapper.appendChild(icon);
 handSlot.appendChild(cardWrapper);
 if (window.IS_MY_TURN) {
   finalCard.addEventListener('click', () => {
+
+    if (!window.IS_MY_TURN) {
+      console.warn('[PlayCard] Not your turn! Ignoring click.');
+      return;
+    }
     const cardType = finalCard.dataset.cardType;
     let zoneType = '';
     if (cardType.includes('farmer')) {
