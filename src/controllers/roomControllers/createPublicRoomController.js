@@ -17,11 +17,9 @@ module.exports = async (req, res) => {
         console.log('availableRooms:', availableRooms);
         let room;
         if (!availableRooms || availableRooms.length === 0) {
-            // no rooms
             room = await roomModel.createPublicRoom(userId);
             if (!room) throw new Error('Failed to insert room in DB');
         } else {
-            // find available room where the user is not a player
             const availableRoom = availableRooms.find(r =>
                 r.player_one_id !== user.id && r.player_two_id !== user.id
             );

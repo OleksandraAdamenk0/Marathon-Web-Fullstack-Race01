@@ -116,3 +116,32 @@ async function reloadRooms(overlay) {
     }, 500);
   }
 }
+
+async function joinPublicRoom() {
+  const response = await fetch('/api/room/public/create?json=true', {
+    method: 'POST'
+  });
+
+  const data = await response.json();
+  const roomId = window.ROOM_ID;
+  const userId = window.USER_ID;
+  const username = window.USERNAME;
+
+  const currentUser = {
+    id: userId,
+    name: username
+  };
+
+  if (data.success) {
+    socket.emit('join-room', {
+      roomId: data.roomId,
+      user: currentUser
+    });
+
+    window.location.href = data.redirectTo;
+  } else {
+    console.error('Failed to join public room:', data.message || 'Unknown error');
+  }
+}
+
+
