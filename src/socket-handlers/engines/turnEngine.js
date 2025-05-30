@@ -73,32 +73,48 @@ class TurnEngine {
 
     static async endTurn(io, roomId) {
         if (await this.checkGameEnd(io, roomId)) return;
+    
+        const before = await roomModel.getTurnNumber(roomId);
+        console.log(`[Debug] Turn before increment: ${before.turn_number}`);
 
         await roomModel.incrementTurn(roomId);
 
- 
+        const after = await roomModel.getTurnNumber(roomId);
+        console.log(`[Debug] Turn after increment: ${after.turn_number}`);
 
-        const newTurn = await roomModel.getTurnNumber(roomId);
+        const turnObj = await roomModel.getTurnNumber(roomId);
+        const newTurn = turnObj.turn_number;
+
         const room = await roomModel.getById(roomId);
-
-        console.log('[TurnEngine] room.player_two_id:', room.player_two_id);
+    
         const currentPlayer = room.current_turn_player_id;
-
         const nextPlayer = currentPlayer === room.player_one_id
-        ? room.player_two_id
-        : room.player_one_id;
-
+            ? room.player_two_id
+            : room.player_one_id;
+    
         console.log(`[TurnEngine] Turn incremented. New turn = ${newTurn}`);
         console.log('[TurnEngine] room.player_one_id:', room.player_one_id);
-        await roomModel.setTurnPlayer(roomId, nextPlayer);
 
+        if (newTurn % 2 === 0) {
+            console.log('[TurnEngine] Even turn detected, executing auto-attack...');
+            const attackResult = await this.attack({ roomId, userId: currentPlayer });
+    
+            if (attackResult.ok) {
+                io.to(roomId).emit('board-update', { board: attackResult.board });
+            } else {
+                console.warn('[TurnEngine] Attack failed:', attackResult.reason);
+            }
+        }
+    
+        await roomModel.setTurnPlayer(roomId, nextPlayer);
+    
         io.to(roomId).emit('turn-started', {
             roomId,
             turnNumber: newTurn,
             currentPlayer: nextPlayer
         });
     }
-
+    
     static async checkGameEnd(io, roomId) {
         const players = await playerModel.getPlayersByRoomId(roomId);
         const [p1, p2] = players;
@@ -220,15 +236,15 @@ class TurnEngine {
         if (!room) return { ok: false, reason: 'Room not found' };
 
         const board = await playersCards.getBoardState(roomId);
-        const ourTroops = board.filter(pc => pc.user_id === userId && pc.zone === 'board')
-            .sort((a,b) => a.position - b.position);
+        const ourTroops = board.filter(pc => pc.user_id === userId && pc.zone === 'board');
         const oppId = room.player_one_id === userId ? room.player_two_id : room.player_one_id;
-        const theirTroops = board.filter(pc => pc.user_id === oppId && pc.zone === 'board')
-            .sort((a,b)=>a.position - b.position);
+        const theirTroops = board.filter(pc => pc.user_id === oppId && pc.zone === 'board');
         if (!ourTroops.length || !theirTroops.length) {
             return { ok: false, reason: 'No valid troops to attack' };
         }
-
+        console.log('[Attack] Our Troops:', ourTroops.map(c => c.name));
+        console.log('[Attack] Their Troops:', theirTroops.map(c => c.name));
+        
         let lastDefIdx = theirTroops.length - 1;
         for (let i=0; i<ourTroops.length; i++) {
             const attacker = ourTroops[i];
